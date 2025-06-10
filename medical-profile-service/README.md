@@ -1,13 +1,13 @@
 # Medical Profile Service
 
-An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and **PostgreSQL**. This service is part of a larger **Patient Management System** project. It is container-ready and will be integrated with **Kafka**, **AWS**, and **Docker** for cloud deployment and communication.
+An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and **PostgreSQL**. This service is part of a larger **Medical Profile Management System ** project. It is container-ready and will be integrated with **Kafka**, **AWS**, and **Docker** for cloud deployment and communication.
 
 ---
 
 ## Features
 
 - **REST API**: Provides an endpoint to retrieve medical profiles.
-- **Layered Architecture**: Separates concerns into controller, service, and repository layers.
+- **Layered Architecture**: Separates concerns into controller, service, and repository layers(along with model, dto, mapper).
 - **Validation**: Uses annotations to enforce data integrity.
 - **DTO and Mapper**: Keeps API responses clean and decoupled from database structure.
 - **Dev-friendly Setup**: Uses H2 in-memory DB for rapid development and testing.
