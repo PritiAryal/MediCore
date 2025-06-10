@@ -6,8 +6,8 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 
 ---
 
-## 📦 Microservices Overview (in progress)
+## Microservices Overview (in progress)
 
-| Service Name             | Description                          | Status        |
-|--------------------------|--------------------------------------|---------------|
-| `medical-profile-service` | Manages medical profile data         | ✅ Implemented |
+| Service Name             | Description                          | Status      |
+|--------------------------|--------------------------------------|-------------|
+| `medical-profile-service` | Manages medical profile data         | Implemented |
