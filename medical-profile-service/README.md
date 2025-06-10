@@ -138,7 +138,3 @@ Returns a list of all medical profiles in DTO format.
 ```
 
 ---
-
-## 🧑‍💻 Author
-
-**Priti**
