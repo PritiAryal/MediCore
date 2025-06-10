@@ -1,26 +1,10 @@
 package com.priti.medicalprofileservice.service;
 
 import com.priti.medicalprofileservice.dto.MedicalProfileResponseDTO;
-import com.priti.medicalprofileservice.mapper.MedicalProfileMapper;
-import com.priti.medicalprofileservice.model.MedicalProfile;
-import com.priti.medicalprofileservice.repository.MedicalProfileRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class MedicalProfileService {
-    private final MedicalProfileRepository medicalProfileRepository;
+public interface MedicalProfileService {
+    List<MedicalProfileResponseDTO> getMedicalProfiles();
 
-    public MedicalProfileService(MedicalProfileRepository medicalProfileRepository) {
-        this.medicalProfileRepository = medicalProfileRepository;
-    }
-
-    public List<MedicalProfileResponseDTO> getMedicalProfiles() {
-        List<MedicalProfile> medicalProfiles = medicalProfileRepository.findAll();
-        return medicalProfiles.stream()
-                .map(MedicalProfileMapper::toDTO).toList();
-        //we can also use lamda function instead of method reference i.e. map(mp -> MedicalProfileMapper.toDTO(mp))
-
-    }
 }
