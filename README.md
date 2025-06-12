@@ -14,6 +14,7 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 
 <hr> </hr>
 <hr> </hr>
+
 # Medical Profile Service
 
 An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and **PostgreSQL**. This service is part of a larger **MediCore - Medical Profile Management System** project. It is container-ready and will be integrated with **Kafka**, **AWS**, and **Docker** for cloud deployment and communication.
