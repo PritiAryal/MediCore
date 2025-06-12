@@ -10,4 +10,5 @@ public interface MedicalProfileService {
     List<MedicalProfileResponseDTO> getMedicalProfiles();
     MedicalProfileResponseDTO createMedicalProfile(MedicalProfileRequestDTO medicalProfileRequestDTO);
     MedicalProfileResponseDTO updateMedicalProfile(UUID id, MedicalProfileRequestDTO medicalProfileRequestDTO);
+    MedicalProfileResponseDTO deleteMedicalProfile(UUID id);
 }

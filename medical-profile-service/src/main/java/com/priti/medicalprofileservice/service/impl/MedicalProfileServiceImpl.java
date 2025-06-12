@@ -50,4 +50,10 @@ public class MedicalProfileServiceImpl implements MedicalProfileService {
         MedicalProfile updatedMedicalProfile = medicalProfileRepository.save(medicalProfile);
         return MedicalProfileMapper.toDTO(updatedMedicalProfile);
     }
+
+    public MedicalProfileResponseDTO deleteMedicalProfile(UUID id){
+        MedicalProfile medicalProfile = medicalProfileRepository.findById(id).orElseThrow(() -> new MedicalProfileNotFoundException("Medical Profile not found with ID: " + id));
+        medicalProfileRepository.deleteById(id);
+        return MedicalProfileMapper.toDTO(medicalProfile);
+    }
 }

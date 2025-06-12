@@ -39,4 +39,11 @@ public class MedicalProfileController {
         MedicalProfileResponseDTO medicalProfileResponseDTO = medicalProfileService.updateMedicalProfile(id, medicalProfileRequestDTO);
         return ResponseEntity.ok().body(medicalProfileResponseDTO);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MedicalProfileResponseDTO> deleteMedicalProfile(@PathVariable UUID id){
+        MedicalProfileResponseDTO medicalProfileResponseDTO = medicalProfileService.deleteMedicalProfile(id);
+        return ResponseEntity.ok().body(medicalProfileResponseDTO);
+        //If not return anything just ResponseEntity<void> then you can use ResponseEntity.noContent().build();
+    }
 }
