@@ -4,7 +4,6 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 
 > ⚙️ This is a learning-focused, end-to-end backend project.
 
----
 
 ## Microservices Overview (in progress)
 
@@ -12,14 +11,13 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 |--------------------------|--------------------------------------|-------------|
 | `medical-profile-service` | Manages medical profile data         | Implemented |
 
-<hr> </hr>
-<hr> </hr>
+---
 
 # Medical Profile Service
 
 An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and **PostgreSQL**. This service is part of a larger **MediCore - Medical Profile Management System** project. It is container-ready and will be integrated with **Kafka**, **AWS**, and **Docker** for cloud deployment and communication.
 
----
+[//]: # (---)
 
 ## Features
 
@@ -32,7 +30,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - **OpenAPI Documentation**: Integrated using SpringDoc with `@Tag` and `@Operation` annotations to generate Swagger-compatible docs.
 - **Global Error Handling**: Centralized exception handling for clean and user-friendly error responses.
 
----
+[//]: # (---)
 
 ## Tech Stack
 
@@ -47,7 +45,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 | Messaging  | Kafka (planned)      | For event-driven communication between services    |
 | Cloud      | AWS (planned)        | For deploying microservices in the cloud           |
 
----
+[//]: # (---)
 
 ## Dependencies Added
 
@@ -59,7 +57,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - `com.h2database:h2`: In-memory database for development and testing
 - `springdoc-openapi-starter-webmvc-ui`: To generate OpenAPI docs with Swagger UI
 
----
+[//]: # (---)
 
 ## Project Setup
 
@@ -75,7 +73,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - `server.port=8081`: Port changed from default `8080` to avoid conflicts
 - `data.sql`: Auto-loaded by Spring Boot to insert dummy data at startup
 
----
+[//]: # (---)
 
 ### Run Locally (using H2 DB)
 
@@ -89,7 +87,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
    ```
 4. Access the API at: `http://localhost:8081/medical-profiles`
 
----
+[//]: # (---)
 
 ### Access H2 Console
 
@@ -109,7 +107,7 @@ spring.h2.console.path=/h2-console
 
 ![img_1.png](medical-profile-service/assets/img_1.png)
 
----
+[//]: # (---)
 
 ## Project Structure (So Far)
 
@@ -134,7 +132,7 @@ com.priti.medicalprofileservice
 │   └── MedicalProfileMapper.java          # Converts Entity <-> DTO
 ```
 
----
+[//]: # (---)
 
 ## API Endpoints (so far)
 
@@ -145,7 +143,7 @@ PUT    /medical-profiles/{id}     # Update profile by ID
 DELETE /medical-profiles/{id}     # Delete profile by ID
 ```
 
----
+[//]: # (---)
 ![img.png](medical-profile-service/assets/img.png)
 
 
@@ -166,7 +164,7 @@ DELETE /medical-profiles/{id}     # Delete profile by ID
 ]
 ```
 
----
+[//]: # (---)
 
 ## OpenAPI Documentation
 
@@ -182,7 +180,7 @@ These are generated using annotations like `@Tag`, `@Operation`, etc., in contro
 
 You can copy the raw OpenAPI JSON from `/v3/api-docs` and paste it into [Swagger Editor](https://editor.swagger.io/) for interactive documentation.
 
----
+[//]: # (---)
 
 ## API Testing with HTTP Files
 
@@ -204,7 +202,7 @@ Examples:
 
 You can use IntelliJ IDEA or VS Code REST Client extension to run these files.
 
----
+[//]: # (---)
 
 ## Global Error Handling
 
@@ -218,7 +216,7 @@ A centralized exception handling mechanism is in place using `@ControllerAdvice`
 
 This ensures consistent error responses across the API.
 
----
+[//]: # (---)
 
 ## Development Notes / Change Log
 
@@ -230,4 +228,5 @@ This ensures consistent error responses across the API.
 - Verified all endpoints using `.http` request files
 - Integrated SpringDoc for OpenAPI documentation
 
+---
 
