@@ -10,7 +10,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - **Layered Architecture**: Separates concerns into controller, service, and repository layers (along with model, DTO, and mapper).
 - **Validation**: Uses annotations to enforce data integrity.
 - **DTO and Mapper**: Keeps API responses clean and decoupled from database structure. Mapper now supports entity-to-DTO and DTO-to-entity conversion.
-- **Grouped Validation Logic**: Uses a validation group interface (`CreateMedicalProfileValidationGroup`) to conditionally apply validation rules like `registeredDate` only during create operations.
+- **Grouped Validation Logic**: Uses a validation group interface (`CreateMedicalProfileValidationGroup`) to conditionally apply validation rules like `time of registration` only during create operations.
 - **Dev-friendly Setup**: Uses H2 in-memory DB for rapid development and testing.
 - **OpenAPI Documentation**: Integrated using SpringDoc with `@Tag` and `@Operation` annotations to generate Swagger-compatible docs.
 - **Global Error Handling**: Centralized exception handling for clean and user-friendly error responses.
@@ -207,8 +207,8 @@ This ensures consistent error responses across the API.
 
 - Added DTOs for request and response
 - Developed create, update, get, delete logic in service and controller
-- Implemented grouped validation to separate `registeredDate` validation for create vs update
-- Added custom repository methods (`existsByEmail`, `existsByEmailAndIdNot`) to prevent duplicate emails
+- Implemented grouped validation
+- Added custom repository methods to prevent duplicate emails
 - Introduced global error handler to handle exceptions gracefully
 - Verified all endpoints using `.http` request files
 - Integrated SpringDoc for OpenAPI documentation
