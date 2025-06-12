@@ -1,13 +1,17 @@
 package com.priti.medicalprofileservice.controller;
 
+import com.priti.medicalprofileservice.dto.MedicalProfileRequestDTO;
 import com.priti.medicalprofileservice.dto.MedicalProfileResponseDTO;
+import com.priti.medicalprofileservice.dto.validators.CreateMedicalProfileValidationGroup;
 import com.priti.medicalprofileservice.service.MedicalProfileService;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/medical-profiles")
@@ -22,5 +26,17 @@ public class MedicalProfileController {
     public ResponseEntity<List<MedicalProfileResponseDTO>> getMedicalProfiles() {
         List<MedicalProfileResponseDTO> medicalProfiles = medicalProfileService.getMedicalProfiles();
         return ResponseEntity.ok().body(medicalProfiles);
+    }
+
+    @PostMapping
+    public ResponseEntity<MedicalProfileResponseDTO> createMedicalProfile(@Validated({Default.class, CreateMedicalProfileValidationGroup.class}) @RequestBody MedicalProfileRequestDTO medicalProfileRequestDTO) {
+        MedicalProfileResponseDTO medicalProfileResponseDTO = medicalProfileService.createMedicalProfile(medicalProfileRequestDTO);
+        return ResponseEntity.ok().body(medicalProfileResponseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MedicalProfileResponseDTO> updateMedicalProfile(@PathVariable UUID id, @Validated({Default.class}) @RequestBody MedicalProfileRequestDTO medicalProfileRequestDTO){
+        MedicalProfileResponseDTO medicalProfileResponseDTO = medicalProfileService.updateMedicalProfile(id, medicalProfileRequestDTO);
+        return ResponseEntity.ok().body(medicalProfileResponseDTO);
     }
 }
