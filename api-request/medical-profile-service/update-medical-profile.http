@@ -1,5 +1,5 @@
 ### Update medical profile
-PUT http://localhost:8081/medical-profiles/43c2614c-95d2-44fd-ae4f-857320f935eb
+PUT http://localhost:8081/medical-profiles/6fb8b130-0696-44e9-a23e-83a93602c076
 Content-Type: application/json
 
 {
