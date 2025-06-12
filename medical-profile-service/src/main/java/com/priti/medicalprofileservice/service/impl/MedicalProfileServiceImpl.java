@@ -40,7 +40,7 @@ public class MedicalProfileServiceImpl implements MedicalProfileService {
 
     public MedicalProfileResponseDTO updateMedicalProfile(UUID id, MedicalProfileRequestDTO medicalProfileRequestDTO){
         MedicalProfile medicalProfile = medicalProfileRepository.findById(id).orElseThrow(() -> new MedicalProfileNotFoundException("Medical Profile not found with ID: " + id));
-        if(medicalProfileRepository.existsByEmail(medicalProfileRequestDTO.getEmail())){
+        if(medicalProfileRepository.existsByEmailAndIdNot(medicalProfileRequestDTO.getEmail(), id)){
             throw new EmailAlreadyExistsException("A medical profile with this email " + medicalProfileRequestDTO.getEmail()+ " already exists");
         }
         medicalProfile.setName(medicalProfileRequestDTO.getName());

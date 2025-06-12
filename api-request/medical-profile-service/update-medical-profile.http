@@ -1,10 +1,10 @@
 ### Update medical profile
-PUT http://localhost:8081/medical-profiles/badbba4d-6070-4f35-9ec4-196a99364206
+PUT http://localhost:8081/medical-profiles/43c2614c-95d2-44fd-ae4f-857320f935eb
 Content-Type: application/json
 
 {
-  "name": "Sia Seeds",
-  "email": "",
+  "name": "Sia Seeds Updated",
+  "email": "siaupdated@example.com",
   "address": "609 north street",
   "dateOfBirth": "1994-07-08"
 }
