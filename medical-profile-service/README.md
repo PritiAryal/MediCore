@@ -14,19 +14,21 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - **Dev-friendly Setup**: Uses H2 in-memory DB for rapid development and testing.
 - **OpenAPI Documentation**: Integrated using SpringDoc with `@Tag` and `@Operation` annotations to generate Swagger-compatible docs.
 - **Global Error Handling**: Centralized exception handling for clean and user-friendly error responses.
+- **Dockerized Microservice**: Fully containerized Spring Boot app using a multi-stage Dockerfile and PostgreSQL container for persistent storage.
+- **Production-Ready PostgreSQL**: Switched from in-memory H2 to PostgreSQL running in a Docker container.
 
 ---
 
 ## Tech Stack
 
 | Category   | Technology           | Description                                        |
-| ---------- | -------------------- | -------------------------------------------------- |
+| ---------- |----------------------| -------------------------------------------------- |
 | Backend    | Spring Boot 3.5.0    | Framework for building RESTful microservices       |
 | Language   | Java 21 (Oracle JDK) | Long-Term Support version for enterprise stability |
 | Database   | PostgreSQL, H2 (dev) | PostgreSQL for production, H2 for dev/testing      |
 | Validation | Hibernate Validator  | Annotation-based request and entity validation     |
 | Docs       | SpringDoc OpenAPI    | Auto-generates Swagger UI from code annotations    |
-| Container  | Docker (planned)     | Will be used to containerize the service           |
+| Container  | Docker               | Containerization using multi-stage build           |
 | Messaging  | Kafka (planned)      | For event-driven communication between services    |
 | Cloud      | AWS (planned)        | For deploying microservices in the cloud           |
 
@@ -51,6 +53,7 @@ An enterprise-level microservice built with **Spring Boot 3.5.0**, **Java 21 (Or
 - Java 21 installed
 - Maven or Gradle (depending on your build tool)
 - IDE (e.g., IntelliJ IDEA)
+- Docker
 
 ## Development Configurations
 
@@ -83,6 +86,7 @@ Spring Boot makes it easy to view and interact with the H2 database via a browse
 - Username: `profile`
 - Password: `profile` *(unless you changed it in application.properties)*
 
+Make Sure to uncomment H2-configuration in your `application.properties` file.
 Make sure this is present in your `application.properties`:
 
 ```properties
@@ -93,6 +97,90 @@ spring.h2.console.path=/h2-console
 ![img_1.png](assets/img_1.png)
 
 ---
+
+## Docker Setup (NEW)
+
+### PostgreSQL Container
+
+A PostgreSQL container was created using the latest PostgreSQL image with the following configuration:
+
+```bash
+docker run --name medical-profile-service-db \
+  -e POSTGRES_USER=profile \
+  -e POSTGRES_PASSWORD=profile \
+  -e POSTGRES_DB=db \
+  -p 5000:5432 \
+  -v medical-profile-db-data:/var/lib/postgresql/data \
+  --network internal \
+  -d postgres:latest
+```
+
+- Port mapped: `5000:5432`
+- Persistent storage: Named volume `medical-profile-db-data`
+- Network: Internal Docker network named `internal`
+
+![img.png](assets/imgH.png)
+
+### Dockerfile for Application
+
+A multi-stage Dockerfile was created in the `medical-profile-service` directory:
+
+```dockerfile
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package
+
+# Stage 2: Run
+FROM openjdk:21-jdk AS runner
+WORKDIR /app
+COPY --from=builder ./app/target/medical-profile-service-0.0.1-SNAPSHOT.jar ./app.jar
+EXPOSE 8081
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+### Docker Run Configuration
+
+In IntelliJ IDEA:
+
+- Image name: `medical-profile-service:latest`
+- Container name: `medical-profile-service`
+- Dockerfile path: `medical-profile-service/Dockerfile`
+- Environment Variables:
+   - `SPRING_DATASOURCE_URL=jdbc:postgresql://medical-profile-service-db:5432/db`
+   - `SPRING_DATASOURCE_USERNAME=profile`
+   - `SPRING_DATASOURCE_PASSWORD=profile`
+   - `SPRING_JPA_HIBERNATE_DDL_AUTO=update`
+   - `SPRING_SQL_INIT_MODE=always`
+- Port Binding: `8081:8081`
+- Run Option: `--network internal`
+
+### PostgreSQL Configuration in `application.properties`
+
+Commented out H2-related settings and retained only essential production config:
+
+![img.png](assets/imgI.png)
+
+
+### IntelliJ DB Integration
+
+- Connected to the running PostgreSQL container from IntelliJ using:
+   - Name: `medical-profile-service-db`
+   - JDBC URL: `jdbc:postgresql://localhost:5000/db`
+   - Username: `profile`, Password: `profile`
+- Verified: Tables created and dummy data from `data.sql` available in database
+![img.png](assets/imgJ.png)
+---
+
+### API Testing in Dockerized Setup
+
+Tested all `.http` request files (`GET`, `POST`, `PUT`, `DELETE`) against the Dockerized application connected to PostgreSQL. All endpoints worked as expected.
+![img.png](assets/imgK.png)
+---
+
 
 ## Project Structure (So Far)
 
@@ -212,4 +300,8 @@ This ensures consistent error responses across the API.
 - Introduced global error handler to handle exceptions gracefully
 - Verified all endpoints using `.http` request files
 - Integrated SpringDoc for OpenAPI documentation
+- Dockerized the application with a multi-stage Dockerfile
+- Created and configured PostgreSQL container with internal Docker networking
+- Connected Dockerized Spring Boot app to PostgreSQL using environment variables
+- Verified DB connection via IntelliJ and tested all API endpoints in the Dockerized setup
 
