@@ -113,7 +113,7 @@ spring.h2.console.path=/h2-console
 
 [//]: # (---)
 
-## Docker Setup (NEW)
+## Docker Setup
 
 ### PostgreSQL Container
 
