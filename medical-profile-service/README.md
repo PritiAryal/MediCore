@@ -121,6 +121,8 @@ docker run --name medical-profile-service-db \
 
 ![img.png](assets/imgH.png)
 
+---
+
 ### Dockerfile for Application
 
 A multi-stage Dockerfile was created in the `medical-profile-service` directory:
@@ -164,6 +166,7 @@ Commented out H2-related settings and retained only essential production config:
 
 ![img.png](assets/imgI.png)
 
+---
 
 ### IntelliJ DB Integration
 
@@ -172,15 +175,18 @@ Commented out H2-related settings and retained only essential production config:
    - JDBC URL: `jdbc:postgresql://localhost:5000/db`
    - Username: `profile`, Password: `profile`
 - Verified: Tables created and dummy data from `data.sql` available in database
+
 ![img.png](assets/imgJ.png)
+
 ---
 
 ### API Testing in Dockerized Setup
 
 Tested all `.http` request files (`GET`, `POST`, `PUT`, `DELETE`) against the Dockerized application connected to PostgreSQL. All endpoints worked as expected.
-![img.png](assets/imgK.png)
----
 
+![img.png](assets/imgK.png)
+
+---
 
 ## Project Structure (So Far)
 
