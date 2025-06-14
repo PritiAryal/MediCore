@@ -11,17 +11,16 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [Dependencies](#dependencies)
 - [Project Setup](#project-setup)
 - [Development Configuration](#development-configuration)
-- [Run Locally (using H2)](#run-locally-using-h2)
-- [H2 Console Access](#h2-console-access)
+- [Run Locally Using H2 DB](#run-locally-using-h2-db)
+- [Access H2 Console](#access-h2-console)
 - [Docker Setup](#docker-setup)
   - [PostgreSQL Container](#postgresql-container)
-  - [Application Dockerfile](#application-dockerfile)
-  - [Docker Run Configuration (in IntelliJ)](#docker-run-configuration-in-intellij)
-- [Database Integration via IntelliJ](#database-integration-via-intellij)
-- [API Endpoints](#api-endpoints)
-- [API Testing](#api-testing)
+  - [Dockerfile For Application](#dockerfile-for-application)
+  - [Docker Run Configuration](#docker-run-configuration)
+- [PostgreSQL Configuration in `application.properties`](#postgresql-configuration-in-applicationproperties)
+- [IntelliJ DB Integration](#intellij-db-integration)
+- [API Testing in Dockerized Setup](#api-testing-in-dockerized-setup)
 - [Global Error Handling](#global-error-handling)
-- [Project Structure](#project-structure)
 - [OpenAPI Documentation](#openapi-documentation)
 - [Development Notes / Change Log](#development-notes--change-log)
 
@@ -57,7 +56,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 
 ---
 
-## Dependencies Added
+## Dependencies
 
 - `spring-boot-starter-web`: For creating REST APIs
 - `spring-boot-starter-data-jpa`: For interacting with databases using JPA
@@ -78,7 +77,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - IDE (e.g., IntelliJ IDEA)
 - Docker
 
-## Development Configurations
+## Development Configuration
 
 - `application.properties`: Configured to use the H2 database for ease of development
 - `server.port=8081`: Port changed from default `8080` to avoid conflicts
@@ -86,7 +85,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 
 ---
 
-### Run Locally (using H2 DB)
+### Run Locally using H2 DB
 
 1. Clone the repository
 2. Navigate to `medical-profile-service`
@@ -211,32 +210,7 @@ Tested all `.http` request files (`GET`, `POST`, `PUT`, `DELETE`) against the Do
 
 ---
 
-## Project Structure (So Far)
-
-```
-com.priti.medicalprofileservice
-├── controller
-│   └── MedicalProfileController.java      # REST endpoints for CRUD operations
-├── model
-│   └── MedicalProfile.java                # JPA Entity with validation
-├── repository
-│   └── MedicalProfileRepository.java      # Extends JpaRepository + custom query methods
-├── service
-│   ├── MedicalProfileService.java         # Service interface
-│   └── impl
-│       └── MedicalProfileServiceImpl.java # Business logic implementation
-├── dto
-│   ├── MedicalProfileResponseDTO.java     # Defines API response format
-│   ├── MedicalProfileRequestDTO.java      # Defines API input format
-│   └── validators
-│       └── CreateMedicalProfileValidationGroup.java  # Interface for validation grouping
-├── mapper
-│   └── MedicalProfileMapper.java          # Converts Entity <-> DTO
-```
-
----
-
-## API Endpoints (so far)
+## API Endpoints
 
 ```
 GET    /medical-profiles          # Fetch all profiles
