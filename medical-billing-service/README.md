@@ -8,7 +8,6 @@ The `medical-billing-service` is a gRPC-based microservice in the MediCore ecosy
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
 - [Proto Definition](#proto-definition)
 - [gRPC Server Implementation](#grpc-server-implementation)
 - [Running the Service](#running-the-service)
