@@ -4,6 +4,29 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 
 ---
 
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Dependencies](#dependencies)
+- [Project Setup](#project-setup)
+- [Development Configuration](#development-configuration)
+- [Run Locally (using H2)](#run-locally-using-h2)
+- [H2 Console Access](#h2-console-access)
+- [Docker Setup](#docker-setup)
+  - [PostgreSQL Container](#postgresql-container)
+  - [Application Dockerfile](#application-dockerfile)
+  - [Docker Run Configuration (in IntelliJ)](#docker-run-configuration-in-intellij)
+- [Database Integration via IntelliJ](#database-integration-via-intellij)
+- [API Endpoints](#api-endpoints)
+- [API Testing](#api-testing)
+- [Global Error Handling](#global-error-handling)
+- [Project Structure](#project-structure)
+- [OpenAPI Documentation](#openapi-documentation)
+- [Development Notes / Change Log](#development-notes--change-log)
+
+---
+
 ## Features
 
 - **REST API**: Provides endpoints to retrieve, create, update, and delete medical profiles.
