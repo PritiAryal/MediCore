@@ -201,10 +201,8 @@ The `.proto` file is manually copied between both services under `src/main/proto
 
 ## Future Enhancements
 
-- Connect to a database to persist billing accounts.
-- Add input validation and error handling in gRPC server.
+- Implement actual business logic for billing account creation.
 - Use a centralized `.proto` management strategy (e.g., separate repo).
-- Enable gRPC reflection for easier testing and introspection.
 
 ---
 
