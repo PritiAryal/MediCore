@@ -201,27 +201,7 @@ POST   /medical-profiles          # Create new profile
 PUT    /medical-profiles/{id}     # Update profile by ID
 DELETE /medical-profiles/{id}     # Delete profile by ID
 ```
-
----
 ![img.png](assets/img.png)
-
-
-
-### Example Response
-
-
-```json
-[
-  {
-    "id": "e4b5f...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "address": "123 Health St",
-    "dateOfBirth": "1990-05-01"
-  },
-  "..."
-]
-```
 
 ---
 
