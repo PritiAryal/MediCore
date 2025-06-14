@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option  java_multiple_files = true;
+option java_package = "billing";
+
+service MedicalBillingService {
+  rpc CreateMedicalBillingAccount (MedicalBillingRequest) returns (MedicalBillingResponse);
+}
+
+message MedicalBillingRequest {
+  string medicalProfileId = 1; //to help with serialization and deserialization of this variable
+  string name = 2; // Name of the medical profile holder
+  string email = 3; // Email of the medical profile holder
+}
+
+message MedicalBillingResponse {
+  string accountId = 1;
+  string status = 2;
+}
+
+//2nd line - It will split service request and response into separate files. By default it will generate a single file for all services.Easier to manage code.
+//3rd line - It ensures that the generated Java code is placed in the package medical-billing.
+

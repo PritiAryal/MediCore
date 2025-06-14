@@ -1,0 +1,8 @@
+#GRPC uses http 2 under the hood, and rest uses http 1.1, so we can use the same tool to test both grpc and rest services.
+GRPC localhost:9001/MedicalBillingService/CreateMedicalBillingAccount
+
+{
+  "medicalProfileId" : "11111",
+  "name" : "Priti",
+  "email" : "priti@gamil.com"
+}

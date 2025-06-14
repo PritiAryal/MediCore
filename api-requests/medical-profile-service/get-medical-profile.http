@@ -1,0 +1,6 @@
+//Built in feature of intellij idea that allows us to make http request to our endpoints.
+//This is seperate from application.
+//Its similar to postman, or how web browser might work but built into intellij idea.
+
+### Get request to get all medical profiles
+GET http://localhost:8081/medical-profiles

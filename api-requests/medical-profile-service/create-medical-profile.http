@@ -1,0 +1,12 @@
+### Create a new medical profile entity
+POST http://localhost:8081/medical-profiles
+Content-Type: application/json
+
+{
+  "name": "Sia Seeds",
+  "email": "sia@example.com",
+  "address": "609 north street",
+  "dateOfBirth": "1994-07-08",
+  "registeredDate": "2025-03-04"
+}
+###

@@ -1,3 +1,0 @@
-### Delete medical profile
-DELETE http://localhost:8081/medical-profiles/0e92b5e6-9544-4045-9912-d69e40ef6838
-###

@@ -4,6 +4,7 @@ import com.priti.medicalprofileservice.dto.MedicalProfileRequestDTO;
 import com.priti.medicalprofileservice.dto.MedicalProfileResponseDTO;
 import com.priti.medicalprofileservice.exception.EmailAlreadyExistsException;
 import com.priti.medicalprofileservice.exception.MedicalProfileNotFoundException;
+import com.priti.medicalprofileservice.grpc.MedicalBillingServiceGrpcClient;
 import com.priti.medicalprofileservice.mapper.MedicalProfileMapper;
 import com.priti.medicalprofileservice.model.MedicalProfile;
 import com.priti.medicalprofileservice.repository.MedicalProfileRepository;
@@ -18,8 +19,11 @@ import java.util.UUID;
 public class MedicalProfileServiceImpl implements MedicalProfileService {
     private final MedicalProfileRepository medicalProfileRepository;
 
-    public MedicalProfileServiceImpl(MedicalProfileRepository medicalProfileRepository) {
+    private final MedicalBillingServiceGrpcClient medicalBillingServiceGrpcClient;
+
+    public MedicalProfileServiceImpl(MedicalProfileRepository medicalProfileRepository, MedicalBillingServiceGrpcClient medicalBillingServiceGrpcClient) {
         this.medicalProfileRepository = medicalProfileRepository;
+        this.medicalBillingServiceGrpcClient = medicalBillingServiceGrpcClient;
     }
 
     public List<MedicalProfileResponseDTO> getMedicalProfiles() {
@@ -34,8 +38,17 @@ public class MedicalProfileServiceImpl implements MedicalProfileService {
             throw new EmailAlreadyExistsException("A medical profile with this email " + medicalProfileRequestDTO.getEmail()+ " already exists");
         }
         MedicalProfile medicalProfile = medicalProfileRepository.save(MedicalProfileMapper.toModel(medicalProfileRequestDTO));
+
+        medicalBillingServiceGrpcClient.createMedicalBillingAccount(
+                medicalProfile.getId().toString(),
+                medicalProfile.getName(),
+                medicalProfile.getEmail()
+        );
+
         return MedicalProfileMapper.toDTO(medicalProfile);
         //It converts new profile details from client i.e reqestdto to medical profile entity then save it in db and convert entity to responsedto and return it.
+
+
     }
 
     public MedicalProfileResponseDTO updateMedicalProfile(UUID id, MedicalProfileRequestDTO medicalProfileRequestDTO){
