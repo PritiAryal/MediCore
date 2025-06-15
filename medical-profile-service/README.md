@@ -22,6 +22,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [API Testing in Dockerized Setup](#api-testing-in-dockerized-setup)
 - [Global Error Handling](#global-error-handling)
 - [OpenAPI Documentation](#openapi-documentation)
+- [gRPC Integration](#grpc-integration)
 - [Development Notes / Change Log](#development-notes--change-log)
 
 ---
@@ -65,6 +66,11 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - `postgresql`: JDBC driver to connect to PostgreSQL
 - `com.h2database:h2`: In-memory database for development and testing
 - `springdoc-openapi-starter-webmvc-ui`: To generate OpenAPI docs with Swagger UI
+- `io.grpc:grpc-netty-shaded` : For gRPC server implementation
+- `io.grpc:grpc-stub` : For gRPC client stubs
+- `io.grpc:grpc-protobuf` : For Protocol Buffers support in gRPC
+- `com.google.protobuf:protobuf-java` : For Protocol Buffers Java support
+- `net.devh:grpc-client-spring-boot-starter` : For integrating gRPC client with Spring Boot
 
 ---
 
@@ -257,6 +263,75 @@ This ensures consistent error responses across the API.
 
 ---
 
+## gRPC Integration
+
+To enable gRPC-based communication between `medical-profile-service` (the client) and `medical-billing-service` (the server), we use a **Protocol Buffers (**``**) file**. This file acts as a contract that defines:
+
+- The structure of the request and response messages
+- The gRPC service name and its RPC methods (endpoints)
+- The Java package for generated classes
+
+In our case, the file is named `medical_billing_service.proto`, and it defines a `MedicalBillingService` with an RPC method:
+
+```proto
+rpc CreateMedicalBillingAccount (BillingRequest) returns (BillingResponse);
+```
+
+This allows the profile service to send a `BillingRequest` and receive a `BillingResponse` when a medical profile is created.
+
+### Why We Added the Proto File Here
+
+gRPC requires both client and server to have access to the same `.proto` definition so that matching Java classes can be generated. Although the file originated in the `medical-billing-service` module (which hosts the server logic), we **copied it into the **``** directory of **`` to:
+
+- Generate gRPC client stubs during the Maven build process
+- Maintain service contract alignment with the billing service
+- Avoid direct dependency sharing for now (future improvement: share via a central proto module)
+
+This setup ensures the profile service can invoke billing RPCs with type-safe, auto-generated Java classes.
+
+---
+
+### Proto Setup
+
+* Copied the shared `medical_billing_service.proto` file from `medical-billing-service` to `src/main/proto/` in `medical-profile-service`
+* Configured `protobuf-maven-plugin` in `pom.xml` to compile `.proto` files into Java classes
+* Ran `mvn compile` to generate gRPC stubs
+
+### gRPC Client Implementation
+
+* Created `MedicalBillingServiceGrpcClient` class under `grpc` package
+* Uses a **blocking stub** to call `CreateMedicalBillingAccount` on the remote `medical-billing-service`
+* Constructed `BillingRequest` with id, name and email from the profile
+
+### Client Configuration
+
+In `application.properties`:
+
+```properties
+billing.service.address=localhost
+billing.service.grpc.port=9001
+```
+
+Can be overridden via environment variables in Docker setup. To support gRPC communication between containers, we updated the Docker run configuration for `medical-profile-service` to include:
+
+- `BILLING_SERVICE_ADDRESS=medical-billing-service`
+- `BILLING_SERVICE_GRPC_PORT=9001`
+
+This ensures that the client (profile service) can successfully resolve and connect to the gRPC server (billing service) running in another container within the same Docker internal network.
+These match the server container’s hostname and port within the internal Docker network.
+![img.png](assets/imgP.png)
+
+### Profile-to-Billing Integration
+
+* On successful creation of a **medical profile**, the service automatically invokes the gRPC client to create a **billing account** in `medical-billing-service`
+* This integration is triggered inside the profile creation service logic
+
+![img.png](assets/imgN.png)
+![img.png](assets/imgL.png)
+![img.png](assets/imgM.png)
+
+---
+
 ## Development Notes / Change Log
 
 - Added DTOs for request and response
@@ -270,6 +345,15 @@ This ensures consistent error responses across the API.
 - Created and configured PostgreSQL container with internal Docker networking
 - Connected Dockerized Spring Boot app to PostgreSQL using environment variables
 - Verified DB connection via IntelliJ and tested all API endpoints in the Dockerized setup
+- Implemented gRPC client to call remote billing service
+- Integrated `.proto` file and compiled client stubs using Maven
+- Automatically creates a billing account when a profile is created
+- Configured gRPC server connection via externalized `application.properties`
 
 ---
+
+
+
+
+
 
