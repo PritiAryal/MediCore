@@ -24,6 +24,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [OpenAPI Documentation](#openapi-documentation)
 - [gRPC Integration](#grpc-integration)
 - [Asynchronous Event-Driven Communication with Kafka](#asynchronous-event-driven-communication-with-kafka)
+- [Kafka Setup with Docker (KRaft Mode)](#kafka-setup-with-docker-kraft-mode)
 - [Development Notes / Change Log](#development-notes--change-log)
 
 ---
@@ -402,6 +403,52 @@ Each of these services independently subscribes to the `medical.profile.created`
 * **Resilience**: Temporary consumer downtime doesn't affect the publishing flow. It ensures fault tolerance by retaining events until they can be processed.
 * **Extensibility**: New services can subscribe to the topic without changing existing code.
 
+---
+
+## Kafka Setup with Docker (KRaft Mode)
+
+We run Kafka using the Bitnami Docker image in KRaft mode (no ZooKeeper) with multiple listeners configured for internal and external communication.
+
+### Docker Image Configuration
+
+| Setting | Value |
+|--------|-------|
+| Image | `bitnami/kafka:latest` |
+| Ports | `9092` (internal), `9094` (external) |
+| Network | `internal` (Docker custom bridge) |
+| Process Role | `controller, broker` (KRaft mode) |
+
+### Environment Variables
+
+```env
+KAFKA_CFG_NODE_ID=0;KAFKA_CFG_PROCESS_ROLES=controller,broker;KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094;KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094;KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT;KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER;KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+````
+
+### What's Configured
+
+| Config                                      | Purpose                                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `bitnami/kafka:latest`                      | Kafka Docker image using KRaft mode (no Zookeeper needed).                                 |
+| `9092`                                      | Internal listener for service-to-service (PLAINTEXT).                                      |
+| `9094`                                      | External listener for local dev tools (`kafka-topics.sh`, `kafka-console-producer`, etc.). |
+| `KAFKA_CFG_ADVERTISED_LISTENERS`            | Defines how other services inside and outside the container should reach Kafka.            |
+| `KAFKA_CFG_PROCESS_ROLES=controller,broker` | Enables this node to act as both a controller and broker.                                  |
+| `KAFKA_CFG_NODE_ID=0`                       | Required for KRaft (must be unique in a cluster).                                          |
+| `--network internal`                        | Keeps Kafka discoverable by your other services (e.g., Spring Boot apps) within Docker.    |
+
+### Kafka Verification (Tested with IntelliJ)
+
+* **Bootstrap server used:** `127.0.0.1:9094`
+* **Kafka connection created in IntelliJ (default settings)**
+* **Created topic:** `medical-profile`
+* **Kafka consumer created:**
+  * **Topic:** `medical-profile`
+  * **Key:** String
+  * **Value:** Bytes (base64)
+* **Kafka producer created:**
+  * **Topic:** `medical-profile`
+  * **Key/Value:** `"test"` (test message)
+* **Result:** Consumer successfully received the produced message
 ---
 
 
