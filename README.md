@@ -7,13 +7,14 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 
 ## Microservices Overview (in progress)
 
-| Service Name             | Description                          | Status      |
-|--------------------------|--------------------------------------|-------------|
-| `medical-profile-service` | Manages medical profile data         | Implemented |
+| Service Name                                        | Description                  | Status      |
+|-----------------------------------------------------|------------------------------|-------------|
+| [Medical Profile Service](#medical-profile-service) | Manages medical profile data | Implemented |
+| [Medical Billing Service](#medical-billing-service) | Manages medical billing data | Implemented |
 
 ---
 
-# Medical Profile Service
+## Medical Profile Service
 
 A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and **PostgreSQL**. This service is part of a larger **MediCore - Medical Profile Management System** project. It is container-ready, supports both REST and gRPC-based communication and will be integrated with **Kafka**, **AWS**, and **Docker** for cloud deployment and communication.
 
@@ -351,7 +352,7 @@ These match the server container’s hostname and port within the internal Docke
 
 ---
 
-# Medical Billing Service
+## Medical Billing Service
 
 The `medical-billing-service` is a gRPC-based microservice in the MediCore ecosystem responsible for handling billing account operations. It exposes gRPC endpoints for other services (like `medical-profile-service`) to create and manage medical billing accounts. This service is designed using Spring Boot 3.5.0 and Java 21, and communicates using Protocol Buffers over gRPC.
 
