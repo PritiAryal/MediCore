@@ -376,12 +376,43 @@ graph LR
 * **Medical Notification Service**
   Subscribes to the same event to trigger welcome emails, alerts, or push notifications.
 
+### Event Publishing Workflow
+
+When a new medical profile is created, the `medical-profile-service`:
+
+1. Publishes a `MedicalProfileCreated` event to a Kafka topic (e.g., `profile.created`).
+2. Proceeds with its workflow without waiting for any consumers.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant ProfileService
+    participant Kafka
+    participant AnalyticsService
+    participant NotificationService
+
+    Client->>ProfileService: Create Profile (HTTP)
+    ProfileService->>Kafka: Publish MedicalProfileCreated Event
+    Kafka-->>AnalyticsService: Event Consumed
+    Kafka-->>NotificationService: Event Consumed
+```
+
+### Subscribed Microservices
+
+* **Analytics Service**: Consumes the event to log activity or generate metrics.
+* **Notification Service**: Sends notifications (e.g., emails or SMS) based on the profile data.
+
+Each of these services independently subscribes to the `profile.created` topic and handles events at their own pace.
+
+
 ### Benefits
 
 * **Non-blocking**: Profile creation doesn't wait for downstream services to respond.
 * **Scalable**: Kafka handles high throughput and allows for horizontal scaling of consumers.
-* **Loose Coupling**: New services can be added as subscribers without modifying the publisher.
-* **Resilience**: Temporary consumer downtime doesn't affect the publishing flow (thanks to Kafka retention and replay).
+* **Loose Coupling**: New services can be added as subscribers without modifying the publisher. Services are not tightly bound to one another.
+* **Resilience**: Temporary consumer downtime doesn't affect the publishing flow. It ensures fault tolerance by retaining events until they can be processed.
+* **Extensibility**: New services can subscribe to the topic without changing existing code.
+
 
 
 ## Development Notes / Change Log
