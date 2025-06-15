@@ -38,6 +38,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [Global Error Handling](#global-error-handling)
 - [OpenAPI Documentation](#openapi-documentation)
 - [gRPC Integration](#grpc-integration)
+- [Asynchronous Event-Driven Communication with Kafka](#asynchronous-event-driven-communication-with-kafka)
 - [Development Notes / Change Log](#development-notes--change-log)
 
 
@@ -331,6 +332,63 @@ These match the server container’s hostname and port within the internal Docke
 ![img.png](medical-profile-service/assets/imgN.png)
 ![img.png](medical-profile-service/assets/imgL.png)
 ![img.png](medical-profile-service/assets/imgM.png)
+
+## Asynchronous Event-Driven Communication with Kafka
+
+To decouple services and improve scalability, we use **Kafka** as the backbone for asynchronous, event-driven communication within the MediCore ecosystem.
+
+### Why Kafka?
+
+Till now, microservices communicates synchronously using REST APIs or gRPC in this project. While this is suitable for simple, one-to-one interactions, it introduces significant drawbacks:
+
+* **Latency**: Each additional service call increases total processing time.
+* **Tight Coupling**: Failures or slow responses in one service can block others.
+* **Scalability Bottlenecks**: High request volume magnifies inter-service traffic.
+
+By introducing **Kafka**, we transform the architecture into an **event-driven** model. Now, services **publish events** rather than making direct calls, and other services **consume these events** asynchronously.
+
+### Use Case: Medical Profile Created Event
+
+When a new medical profile is created in the `medical-profile-service`, it publishes a **`MedicalProfileCreatedEvent`** to a Kafka topic named:
+
+```
+medical.profile.created
+```
+
+This event includes relevant data like medical profile ID, name, email, creation time, etc.
+
+### Event Flow Overview
+
+```mermaid
+graph LR
+    A[medical-profile-service] -- Protobuf --> B[medical-billing-service : gRPC Server]
+    A[medical-profile-service] -- Publishes Event --> C((Kafka Topic: medical.profile.created))
+    C --> D[medical-analytics-service]
+    C --> E[medical-notification-service]
+```
+
+```mermaid
+graph LR
+    A[medical-profile-service] -- Publishes Event --> B((Kafka Topic: medical.profile.created))
+    B --> C[medical-analytics-service]
+    B --> D[medical-notification-service]
+```
+
+### Services Listening to This Event
+
+* **Medical Analytics Service**
+  Subscribes to `medical.profile.created` to update internal metrics and reporting datasets.
+
+* **Medical Notification Service**
+  Subscribes to the same event to trigger welcome emails, alerts, or push notifications.
+
+### Benefits
+
+* **Non-blocking**: Profile creation doesn't wait for downstream services to respond.
+* **Scalable**: Kafka handles high throughput and allows for horizontal scaling of consumers.
+* **Loose Coupling**: New services can be added as subscribers without modifying the publisher.
+* **Resilience**: Temporary consumer downtime doesn't affect the publishing flow (thanks to Kafka retention and replay).
+
 
 ## Development Notes / Change Log
 
