@@ -369,6 +369,23 @@ graph LR
     B --> D[medical-notification-service]
 ```
 
+When a new medical profile is created, the `medical-profile-service` publishes a `MedicalProfileCreated` event to a Kafka topic (e.g., `medical.profile.created`) and proceeds with its workflow without waiting for any consumers.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant MedicalProfileService
+    participant Kafka
+    participant MedicalAnalyticsService
+    participant MedicalNotificationService
+
+    Client->>MedicalProfileService: Create Profile (HTTP)
+    MedicalProfileService->>Kafka: Publish MedicalProfileCreated Event
+    Kafka-->>MedicalAnalyticsService: Event Consumed
+    Kafka-->>MedicalNotificationService: Event Consumed
+```
+Each of these services independently subscribes to the `medical.profile.created` topic and handles events at their own pace.
+
 ### Services Listening to This Event
 
 * **Medical Analytics Service**
@@ -381,8 +398,9 @@ graph LR
 
 * **Non-blocking**: Profile creation doesn't wait for downstream services to respond.
 * **Scalable**: Kafka handles high throughput and allows for horizontal scaling of consumers.
-* **Loose Coupling**: New services can be added as subscribers without modifying the publisher.
-* **Resilience**: Temporary consumer downtime doesn't affect the publishing flow (thanks to Kafka retention and replay).
+* **Loose Coupling**: New services can be added as subscribers without modifying the publisher. Services are not tightly bound to one another.
+* **Resilience**: Temporary consumer downtime doesn't affect the publishing flow. It ensures fault tolerance by retaining events until they can be processed.
+* **Extensibility**: New services can subscribe to the topic without changing existing code.
 
 ---
 
