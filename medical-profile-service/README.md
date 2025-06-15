@@ -29,16 +29,19 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 
 ## Features
 
-- **REST API**: Provides endpoints to retrieve, create, update, and delete medical profiles.
-- **Layered Architecture**: Separates concerns into controller, service, and repository layers (along with model, DTO, and mapper).
-- **Validation**: Uses annotations to enforce data integrity.
-- **DTO and Mapper**: Keeps API responses clean and decoupled from database structure. Mapper now supports entity-to-DTO and DTO-to-entity conversion.
-- **Grouped Validation Logic**: Uses a validation group interface (`CreateMedicalProfileValidationGroup`) to conditionally apply validation rules like `time of registration` only during create operations.
-- **Dev-friendly Setup**: Uses H2 in-memory DB for rapid development and testing.
-- **OpenAPI Documentation**: Integrated using SpringDoc with `@Tag` and `@Operation` annotations to generate Swagger-compatible docs.
-- **Global Error Handling**: Centralized exception handling for clean and user-friendly error responses.
-- **Dockerized Microservice**: Fully containerized Spring Boot app using a multi-stage Dockerfile and PostgreSQL container for persistent storage.
-- **Production-Ready PostgreSQL**: Switched from in-memory H2 to PostgreSQL running in a Docker container.
+- **RESTful API**: Provides endpoints to create, retrieve, update, and delete medical profiles.
+- **Layered Architecture**: Follows a clean separation of concerns across Controller, Service, Repository, DTO, Model, and Mapper layers.
+- **Validation System**:
+  - Field-level annotations ensure input integrity.
+  - **Grouped validation** using interfaces (e.g. `CreateMedicalProfileValidationGroup`) applies context-specific rules like "registration time" only during create operations.
+- **DTO and Mapper Support**: Maps between entities and DTOs to keep the API contract clean and decoupled from internal database models.
+- **gRPC Client Integration**: Communicates with `medical-billing-service` to auto-create billing accounts when profiles are added.
+- **OpenAPI Documentation**: Integrated with SpringDoc using `@Tag` and `@Operation` annotations to generate Swagger-compatible docs.
+- **Global Exception Handling**: Centralized with `@ControllerAdvice` for consistent, structured error responses.
+- **Database Flexibility**:
+  - **H2 in-memory** for lightweight development/testing.
+  - **PostgreSQL** via Docker for production-ready persistence.
+- **Containerized Deployment**: Built using a multi-stage Dockerfile for efficient builds and runs alongside PostgreSQL in Docker network.
 
 ---
 
