@@ -361,10 +361,10 @@ This event includes relevant data like medical profile ID, name, email, creation
 
 ```mermaid
 graph LR
-    A[medical-profile-service] -- Protobuf --> B[medical-billing-service : gRPC Server]
-    A[medical-profile-service] -- Publishes Event --> C((Kafka Topic: medical.profile.created))
-    C --> D[medical-analytics-service]
-    C --> E[medical-notification-service]
+    A[medical-profile-service : gRPC Client, Kafka Producer] -- Protobuf --> B[medical-billing-service : gRPC Server]
+    A -- Publishes Event --> C((Kafka Topic: medical.profile.created))
+    C --> D[medical-analytics-service : Kafka Consumer]
+    C --> E[medical-notification-service : Kafka Consumer]
 ```
 
 ```mermaid
