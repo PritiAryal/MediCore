@@ -336,10 +336,6 @@ These match the server container’s hostname and port within the internal Docke
 
 ---
 
-Here's the new content you can append to your existing README to document the addition of asynchronous communication using Kafka for your microservices setup:
-
----
-
 ## Asynchronous Event-Driven Communication with Kafka
 
 To decouple services and improve scalability, we use **Kafka** as the backbone for asynchronous, event-driven communication within the MediCore ecosystem.
