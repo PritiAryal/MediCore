@@ -367,12 +367,6 @@ graph LR
     C --> E[medical-notification-service]
 ```
 
-```mermaid
-graph LR
-    A[medical-profile-service] -- Publishes Event --> B((Kafka Topic: medical.profile.created))
-    B --> C[medical-analytics-service]
-    B --> D[medical-notification-service]
-```
 
 ### Services Listening to This Event
 
