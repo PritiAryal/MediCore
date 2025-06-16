@@ -517,6 +517,13 @@ This setup ensures full compatibility in Docker-based environments and local dev
 - Integrated `.proto` file and compiled client stubs using Maven
 - Automatically creates a billing account when a profile is created
 - Configured gRPC server connection via externalized `application.properties`
+- Introduced Kafka for asynchronous event-driven communication
+- Created MedicalProfileKafkaProducer to publish profile creation events to Kafka
+- Defined Protobuf schema for MedicalProfileCreated events and compiled using Maven plugin
+- Configured Kafka producer with key/value serializers in application.properties
+- Added SPRING_KAFKA_BOOTSTRAP_SERVERS to Docker environment for internal Kafka discovery
+- Tested event flow using IntelliJ Kafka consumer – verified binary message contents after decoding
+
 
 ---
 
