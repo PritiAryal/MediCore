@@ -461,7 +461,7 @@ The `medical-profile-service` includes a Kafka producer responsible for publishi
 
 Kafka messages are structured using **Protocol Buffers** for language-neutral, efficient communication.
 
-* **Schema location**: [`common-kafka-schema/src/main/proto/medical-profile-event.proto`](./common-kafka-schema/src/main/proto/medical-profile-event.proto)
+* **Schema location**: [`./src/main/proto/medical-profile-event.proto`](./src/main/proto/medical-profile-event.proto)
 * **Schema name**: `MedicalProfileEvent`
 * **Generated classes**: Compiled via Maven using `protobuf-maven-plugin` and used directly in producer code.
 
