@@ -40,6 +40,9 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [OpenAPI Documentation](#openapi-documentation)
 - [gRPC Integration](#grpc-integration)
 - [Asynchronous Event-Driven Communication with Kafka](#asynchronous-event-driven-communication-with-kafka)
+- [Kafka Setup with Docker (KRaft Mode)](#kafka-setup-with-docker-kraft-mode)
+- [Kafka Producer Implementation](#kafka-producer-implementation)
+- [Kafka Consumer Implementation](#kafka-consumer-implementation)
 - [Development Notes / Change Log](#development-notes--change-log)
 
 
@@ -486,6 +489,24 @@ This setup ensures full compatibility in Docker-based environments and local dev
 ![img.png](medical-profile-service/assets/imgR.png)
 ![img.png](medical-profile-service/assets/imgQ.png)
 ![img.png](medical-profile-service/assets/imgS.png)
+
+
+## Kafka Consumer Implementation
+
+The `medical-analytics-service` acts as a Kafka **consumer**, responsible for asynchronously receiving and processing medical profile creation events published by the `medical-profile-service`. This service listens to the Kafka topic `medical-profile` and consumes serialized `MedicalProfileEvent` messages (encoded in Protocol Buffers). I---
+
+| Property            | Value                                     |
+| ------------------- | ----------------------------------------- |
+| **Service**         | `medical-analytics-service`               |
+| **Kafka Topic**     | `medical-profile`                         |
+| **Group ID**        | `medical-analytics-service`               |
+| **Deserialization** | `ByteArrayDeserializer` + Protobuf Parser |
+| **Message Type**    | `MedicalProfileEvent`                     |
+
+![img.png](medical-analytics-service/assets/img.png)
+![img.png](medical-analytics-service/assets/imgA.png)
+
+Please refer to [Medical Analytics Service](#medical-analytics-service) for complete detail.
 
 
 ## Development Notes / Change Log
