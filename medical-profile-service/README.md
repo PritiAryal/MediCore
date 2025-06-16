@@ -25,6 +25,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 - [gRPC Integration](#grpc-integration)
 - [Asynchronous Event-Driven Communication with Kafka](#asynchronous-event-driven-communication-with-kafka)
 - [Kafka Setup with Docker (KRaft Mode)](#kafka-setup-with-docker-kraft-mode)
+- [Kafka Producer Implementation](#kafka-producer-implementation)
 - [Development Notes / Change Log](#development-notes--change-log)
 
 ---
@@ -376,7 +377,7 @@ sequenceDiagram
     participant MedicalNotificationService
 
     Client->>MedicalProfileService: Create Profile (HTTP)
-    MedicalProfileService->>Kafka: Publish MedicalProfileCreated Event
+    MedicalProfileService->>Kafka: Publish MedicalProfileEvent Event
     Kafka-->>MedicalAnalyticsService: Event Consumed
     Kafka-->>MedicalNotificationService: Event Consumed
 ```
@@ -446,7 +447,7 @@ KAFKA_CFG_NODE_ID=0;KAFKA_CFG_PROCESS_ROLES=controller,broker;KAFKA_CFG_LISTENER
 * **Result:** Consumer successfully received the produced message
 ---
 
-### Kafka Producer Implementation
+## Kafka Producer Implementation
 
 The `medical-profile-service` includes a Kafka producer responsible for publishing a `MedicalProfileCreated` event whenever a new medical profile is successfully created.
 

@@ -349,25 +349,19 @@ By introducing **Kafka**, we transform the architecture into an **event-driven**
 
 ### Use Case: Medical Profile Created Event
 
-When a new medical profile is created in the `medical-profile-service`, it publishes a **`MedicalProfileCreatedEvent`** to a Kafka topic named:
-
-```
-medical.profile.created
-```
-
-This event includes relevant data like medical profile ID, name, email, creation time, etc.
+When a new medical profile is created in the `medical-profile-service`, it publishes a **`MedicalProfileEvent`** to a Kafka topic.
+This event includes relevant data like medical profile ID, name, email, event type.
 
 ### Event Flow Overview
 
 ```mermaid
 graph LR
-    A[medical-profile-service] -- Protobuf --> B[medical-billing-service : gRPC Server]
-    A -- Publishes Event --> C((Kafka Topic: medical.profile.created))
-    C --> D[medical-analytics-service]
-    C --> E[medical-notification-service]
+    A[medical-profile-service] -- Publishes Event --> B((Kafka Topic: medical.profile))
+    B --> C[medical-analytics-service]
+    B --> D[medical-notification-service]
 ```
 
-When a new medical profile is created, the `medical-profile-service` publishes a `MedicalProfileCreated` event to a Kafka topic (e.g., `medical.profile.created`) and proceeds with its workflow without waiting for any consumers.
+When a new medical profile is created, the `medical-profile-service` publishes a `MedicalProfileEvent` event to a Kafka topic (e.g., `medical.profile`) and proceeds with its workflow without waiting for any consumers.
 
 ```mermaid
 sequenceDiagram
@@ -378,16 +372,16 @@ sequenceDiagram
     participant MedicalNotificationService
 
     Client->>MedicalProfileService: Create Profile (HTTP)
-    MedicalProfileService->>Kafka: Publish MedicalProfileCreated Event
+    MedicalProfileService->>Kafka: Publish MedicalProfileEvent Event
     Kafka-->>MedicalAnalyticsService: Event Consumed
     Kafka-->>MedicalNotificationService: Event Consumed
 ```
-Each of these services independently subscribes to the `medical.profile.created` topic and handles events at their own pace.
+Each of these services independently subscribes to the `medical-profile` topic and handles events at their own pace.
 
 ### Services Listening to This Event
 
 * **Medical Analytics Service**
-  Subscribes to `medical.profile.created` to update internal metrics and reporting datasets.
+  Subscribes to `medical.profile` to update internal metrics and reporting datasets.
 
 * **Medical Notification Service**
   Subscribes to the same event to trigger welcome emails, alerts, or push notifications.
@@ -400,6 +394,97 @@ Each of these services independently subscribes to the `medical.profile.created`
 * **Resilience**: Temporary consumer downtime doesn't affect the publishing flow. It ensures fault tolerance by retaining events until they can be processed.
 * **Extensibility**: New services can subscribe to the topic without changing existing code.
 
+## Kafka Setup with Docker (KRaft Mode)
+
+We run Kafka using the Bitnami Docker image in KRaft mode (no ZooKeeper) with multiple listeners configured for internal and external communication.
+
+### Docker Image Configuration
+
+| Setting | Value |
+|--------|-------|
+| Image | `bitnami/kafka:latest` |
+| Ports | `9092` (internal), `9094` (external) |
+| Network | `internal` (Docker custom bridge) |
+| Process Role | `controller, broker` (KRaft mode) |
+
+### Environment Variables
+
+```env
+KAFKA_CFG_NODE_ID=0;KAFKA_CFG_PROCESS_ROLES=controller,broker;KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094;KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094;KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT;KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER;KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+````
+
+### What's Configured
+
+| Config                                      | Purpose                                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `bitnami/kafka:latest`                      | Kafka Docker image using KRaft mode (no Zookeeper needed).                                 |
+| `9092`                                      | Internal listener for service-to-service (PLAINTEXT).                                      |
+| `9094`                                      | External listener for local dev tools (`kafka-topics.sh`, `kafka-console-producer`, etc.). |
+| `KAFKA_CFG_ADVERTISED_LISTENERS`            | Defines how other services inside and outside the container should reach Kafka.            |
+| `KAFKA_CFG_PROCESS_ROLES=controller,broker` | Enables this node to act as both a controller and broker.                                  |
+| `KAFKA_CFG_NODE_ID=0`                       | Required for KRaft (must be unique in a cluster).                                          |
+| `--network internal`                        | Keeps Kafka discoverable by your other services (e.g., Spring Boot apps) within Docker.    |
+
+### Kafka Verification (Tested with IntelliJ)
+
+* **Bootstrap server used:** `127.0.0.1:9094`
+* **Kafka connection created in IntelliJ (default settings)**
+* **Created topic:** `medical-profile`
+* **Kafka consumer created:**
+  * **Topic:** `medical-profile`
+  * **Key:** String
+  * **Value:** Bytes (base64)
+* **Kafka producer created:**
+  * **Topic:** `medical-profile`
+  * **Key/Value:** `"test"` (test message)
+* **Result:** Consumer successfully received the produced message
+---
+
+## Kafka Producer Implementation
+
+The `medical-profile-service` includes a Kafka producer responsible for publishing a `MedicalProfileCreated` event whenever a new medical profile is successfully created.
+
+* **Package**: `com.priti.medicalprofileservice.kafka`
+* **Class**: `KafkaProducer`
+* **Serialization**: Messages are serialized using **Protocol Buffers (Protobuf)** into binary format.
+* **Integration Point**: Called from the service layer after persisting the profile in the database.
+---
+
+### Event Schema (Protobuf)
+
+Kafka messages are structured using **Protocol Buffers** for language-neutral, efficient communication.
+
+* **Schema location**: [`common-kafka-schema/src/main/proto/medical_profile_event.proto`](./common-kafka-schema/src/main/proto/medical_profile_event.proto)
+* **Schema name**: `MedicalProfileEvent`
+* **Generated classes**: Compiled via Maven using `protobuf-maven-plugin` and used directly in producer code.
+
+This ensures that all services (producers and consumers) use a consistent schema for message serialization and deserialization.
+
+
+### Kafka Producer Configuration
+
+Kafka-related producer settings are defined in `application.properties` for the `medical-profile-service`:
+
+```properties
+# Kafka broker address - injected from environment (docker-compose)
+spring.kafka.bootstrap-servers=${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+
+# Key/Value serializer classes
+spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.ByteArraySerializer
+```
+
+💡 The actual value of `SPRING_KAFKA_BOOTSTRAP_SERVERS` is injected via environment variable:
+
+```env
+SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+```
+
+This setup ensures full compatibility in Docker-based environments and local development.
+
+![img.png](medical-profile-service/assets/imgR.png)
+![img.png](medical-profile-service/assets/imgQ.png)
+![img.png](medical-profile-service/assets/imgS.png)
 
 
 ## Development Notes / Change Log
@@ -419,6 +504,12 @@ Each of these services independently subscribes to the `medical.profile.created`
 - Integrated `.proto` file and compiled client stubs using Maven
 - Automatically creates a billing account when a profile is created
 - Configured gRPC server connection via externalized `application.properties`
+- Introduced Kafka for asynchronous event-driven communication
+- Created MedicalProfileKafkaProducer to publish profile creation events to Kafka
+- Defined Protobuf schema for MedicalProfileCreated events and compiled using Maven plugin
+- Configured Kafka producer with key/value serializers in application.properties
+- Added SPRING_KAFKA_BOOTSTRAP_SERVERS to Docker environment for internal Kafka discovery
+- Tested event flow using IntelliJ Kafka consumer – verified binary message contents after decoding
 
 ---
 
