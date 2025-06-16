@@ -353,24 +353,19 @@ By introducing **Kafka**, we transform the architecture into an **event-driven**
 
 ### Use Case: Medical Profile Created Event
 
-When a new medical profile is created in the `medical-profile-service`, it publishes a **`MedicalProfileCreatedEvent`** to a Kafka topic named:
-
-```
-medical.profile.created
-```
-
-This event includes relevant data like medical profile ID, name, email, creation time, etc.
+When a new medical profile is created in the `medical-profile-service`, it publishes a **`MedicalProfileEvent`** to a Kafka topic.
+This event includes relevant data like medical profile ID, name, email, event type.
 
 ### Event Flow Overview
 
 ```mermaid
 graph LR
-    A[medical-profile-service] -- Publishes Event --> B((Kafka Topic: medical.profile.created))
+    A[medical-profile-service] -- Publishes Event --> B((Kafka Topic: medical.profile))
     B --> C[medical-analytics-service]
     B --> D[medical-notification-service]
 ```
 
-When a new medical profile is created, the `medical-profile-service` publishes a `MedicalProfileCreated` event to a Kafka topic (e.g., `medical.profile.created`) and proceeds with its workflow without waiting for any consumers.
+When a new medical profile is created, the `medical-profile-service` publishes a `MedicalProfileEvent` event to a Kafka topic (e.g., `medical.profile`) and proceeds with its workflow without waiting for any consumers.
 
 ```mermaid
 sequenceDiagram
@@ -385,12 +380,12 @@ sequenceDiagram
     Kafka-->>MedicalAnalyticsService: Event Consumed
     Kafka-->>MedicalNotificationService: Event Consumed
 ```
-Each of these services independently subscribes to the `medical.profile.created` topic and handles events at their own pace.
+Each of these services independently subscribes to the `medical-profile` topic and handles events at their own pace.
 
 ### Services Listening to This Event
 
 * **Medical Analytics Service**
-  Subscribes to `medical.profile.created` to update internal metrics and reporting datasets.
+  Subscribes to `medical.profile` to update internal metrics and reporting datasets.
 
 * **Medical Notification Service**
   Subscribes to the same event to trigger welcome emails, alerts, or push notifications.
@@ -450,6 +445,58 @@ KAFKA_CFG_NODE_ID=0;KAFKA_CFG_PROCESS_ROLES=controller,broker;KAFKA_CFG_LISTENER
   * **Key/Value:** `"test"` (test message)
 * **Result:** Consumer successfully received the produced message
 ---
+
+### Kafka Producer Implementation
+
+The `medical-profile-service` includes a Kafka producer responsible for publishing a `MedicalProfileCreated` event whenever a new medical profile is successfully created.
+
+* **Package**: `com.priti.medicalprofileservice.kafka`
+* **Class**: `KafkaProducer`
+* **Serialization**: Messages are serialized using **Protocol Buffers (Protobuf)** into binary format.
+* **Integration Point**: Called from the service layer after persisting the profile in the database.
+---
+
+### Event Schema (Protobuf)
+
+Kafka messages are structured using **Protocol Buffers** for language-neutral, efficient communication.
+
+* **Schema location**: [`common-kafka-schema/src/main/proto/medical-profile-event.proto`](./common-kafka-schema/src/main/proto/medical-profile-event.proto)
+* **Schema name**: `MedicalProfileEvent`
+* **Generated classes**: Compiled via Maven using `protobuf-maven-plugin` and used directly in producer code.
+
+This ensures that all services (producers and consumers) use a consistent schema for message serialization and deserialization.
+
+---
+
+### Kafka Producer Configuration
+
+Kafka-related producer settings are defined in `application.properties` for the `medical-profile-service`:
+
+```properties
+# Kafka broker address - injected from environment (docker-compose)
+spring.kafka.bootstrap-servers=${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+
+# Key/Value serializer classes
+spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.ByteArraySerializer
+```
+
+💡 The actual value of `SPRING_KAFKA_BOOTSTRAP_SERVERS` is injected via environment variable:
+
+```env
+SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+```
+
+This setup ensures full compatibility in Docker-based environments and local development.
+
+![img.png](assets/imgR.png)
+![img.png](assets/imgQ.png)
+![img.png](assets/imgS.png)
+
+
+---
+
+
 
 
 ## Development Notes / Change Log
