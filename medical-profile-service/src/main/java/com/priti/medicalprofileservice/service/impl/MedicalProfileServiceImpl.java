@@ -5,6 +5,7 @@ import com.priti.medicalprofileservice.dto.MedicalProfileResponseDTO;
 import com.priti.medicalprofileservice.exception.EmailAlreadyExistsException;
 import com.priti.medicalprofileservice.exception.MedicalProfileNotFoundException;
 import com.priti.medicalprofileservice.grpc.MedicalBillingServiceGrpcClient;
+import com.priti.medicalprofileservice.kafka.KafkaProducer;
 import com.priti.medicalprofileservice.mapper.MedicalProfileMapper;
 import com.priti.medicalprofileservice.model.MedicalProfile;
 import com.priti.medicalprofileservice.repository.MedicalProfileRepository;
@@ -21,9 +22,12 @@ public class MedicalProfileServiceImpl implements MedicalProfileService {
 
     private final MedicalBillingServiceGrpcClient medicalBillingServiceGrpcClient;
 
-    public MedicalProfileServiceImpl(MedicalProfileRepository medicalProfileRepository, MedicalBillingServiceGrpcClient medicalBillingServiceGrpcClient) {
+    private final KafkaProducer kafkaProducer;
+
+    public MedicalProfileServiceImpl(MedicalProfileRepository medicalProfileRepository, MedicalBillingServiceGrpcClient medicalBillingServiceGrpcClient, KafkaProducer kafkaProducer) {
         this.medicalProfileRepository = medicalProfileRepository;
         this.medicalBillingServiceGrpcClient = medicalBillingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<MedicalProfileResponseDTO> getMedicalProfiles() {
@@ -44,6 +48,8 @@ public class MedicalProfileServiceImpl implements MedicalProfileService {
                 medicalProfile.getName(),
                 medicalProfile.getEmail()
         );
+
+        kafkaProducer.sendEvent(medicalProfile);
 
         return MedicalProfileMapper.toDTO(medicalProfile);
         //It converts new profile details from client i.e reqestdto to medical profile entity then save it in db and convert entity to responsedto and return it.
