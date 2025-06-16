@@ -3,10 +3,10 @@ POST http://localhost:8081/medical-profiles
 Content-Type: application/json
 
 {
-  "name": "Yia Seeds",
-  "email": "yia@example.com",
-  "address": "109 north street",
-  "dateOfBirth": "1999-07-08",
-  "registeredDate": "2025-06-04"
+  "name": "Priti Test Kafka 2",
+  "email": "pritiTest2@example.com",
+  "address": "809 north street",
+  "dateOfBirth": "1997-07-08",
+  "registeredDate": "2025-05-04"
 }
 ###
