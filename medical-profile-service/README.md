@@ -500,7 +500,7 @@ This setup ensures full compatibility in Docker-based environments and local dev
 
 ## Kafka Consumer Implementation
 
-The `medical-analytics-service` acts as a Kafka **consumer**, responsible for asynchronously receiving and processing medical profile creation events published by the `medical-profile-service`. This service listens to the Kafka topic `medical-profile` and consumes serialized `MedicalProfileEvent` messages (encoded in Protocol Buffers). I---
+The `medical-analytics-service` acts as a Kafka **consumer**, responsible for asynchronously receiving and processing medical profile creation events published by the `medical-profile-service`. This service listens to the Kafka topic `medical-profile` and consumes serialized `MedicalProfileEvent` messages (encoded in Protocol Buffers).
 
 | Property            | Value                                     |
 | ------------------- | ----------------------------------------- |
