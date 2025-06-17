@@ -1,0 +1,35 @@
+server:
+  port: 8084
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        ## REST CLIENT -> http://localhost:8084/api/medical-profiles
+        ## API GATEWAY WILL REWRITE THE REQUEST SO IT CAN CALL INTERNAL ADDRESS OF MEDICAL-PROFILE-SERVICE THE WAY MEDICAL-PROFILE-SERVICE MICROSERVICE EXPECTS.
+        ## API GATEWAY -> http://medical-profiles-service:8081/medical-profiles
+        ## MEDICAL PROFILE SERVICE (SPRING BOOT APP) -> /medica-profile -> Medical Profiles Array
+        - id: medical-profile-service-route
+          uri: http://medical-profile-service:8081
+          predicates:
+            - Path=/api/medical-profiles/**
+          filters:
+            - StripPrefix=1
+
+
+        ## REST CLIENT -> http://localhost:8084/api-docs/medical-profiles
+        ## API GATEWAY -> http://medical-profiles-service:8081/v3/api-docs
+        - id: api-docs-medical-profile-route
+          uri: http://medical-profile-service:8081
+          predicates:
+            - Path=/api-docs/medical-profiles
+          filters:
+            - RewritePath=/api-docs/medical-profiles,/v3/api-docs
+
+
+
+
+
+
+
+
