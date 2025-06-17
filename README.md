@@ -920,7 +920,7 @@ As of now, our client application interacts **directly** with individual microse
 - [Authentication via Gateway](#authentication-via-gateway)
 - [Implementation with Spring Cloud Gateway](#implementation-with-spring-cloud-gateway)
 - [Testing the API Gateway](#testing-the-api-gateway)
-- [Summary](#summary)
+- [API Gateway Summary](#api-gateway-summary)
 
 ## API Gateway Tech Stack
 
@@ -1109,7 +1109,7 @@ Under the hood:
 
 This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
 
-## Summary
+## API Gateway Summary
 
 | Without Gateway                        | With Gateway                 |
 | -------------------------------------- | ---------------------------- |
