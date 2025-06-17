@@ -4,6 +4,19 @@ As of now, our client application interacts **directly** with individual microse
 
 ---
 
+## Table of Contents
+- [Tech Stack](#tech-stack)
+- [Problems with Direct Client-to-Microservice Communication](#problems-with-direct-client-to-microservice-communication)
+- [Enter API Gateway](#enter-api-gateway)
+- [Benefits of Using an API Gateway](#benefits-of-using-an-api-gateway)
+- [Real-World Scenario in MediCore](#real-world-scenario-in-medicore)
+- [Configured Routes](#configured-routes)
+- [API Gateway Docker Integration](#api-gateway-docker-integration)
+- [Authentication via Gateway](#authentication-via-gateway)
+- [Implementation with Spring Cloud Gateway](#implementation-with-spring-cloud-gateway)
+- [Testing the API Gateway](#testing-the-api-gateway)
+- [Summary](#summary)
+
 ## Tech Stack
 
 * **Java 21**

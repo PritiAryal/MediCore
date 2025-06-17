@@ -910,7 +910,19 @@ The `medical-analytics-service` enhances the MediCore platform's responsiveness,
 
 As of now, our client application interacts **directly** with individual microservices (e.g., `medical-profile-service`). While this works for small setups, it quickly becomes **unmanageable, insecure, and inflexible** as the number of microservices increases. This is where an **API Gateway** becomes essential.
 
-### API Gateway Tech Stack
+## Table of Contents
+- [API Gateway Tech Stack](#api-gateway-tech-stack)
+- [Problems with Direct Client-to-Microservice Communication](#problems-with-direct-client-to-microservice-communication)
+- [Enter API Gateway](#enter-api-gateway)
+- [Real-World Scenario in MediCore](#real-world-scenario-in-medicore)
+- [Configured Routes (as of now)](#configured-routes-as-of-now)
+- [API Gateway Docker Integration](#api-gateway-docker-integration)
+- [Authentication via Gateway](#authentication-via-gateway)
+- [Implementation with Spring Cloud Gateway](#implementation-with-spring-cloud-gateway)
+- [Testing the API Gateway](#testing-the-api-gateway)
+- [Summary](#summary)
+
+## API Gateway Tech Stack
 
 * **Java 21**
 * **Spring Boot 3**
@@ -919,7 +931,7 @@ As of now, our client application interacts **directly** with individual microse
 * **Docker**
 
 
-### Problems with Direct Client-to-Microservice Communication
+## Problems with Direct Client-to-Microservice Communication
 
 1. **Tight Coupling to Service Addresses**
    Clients must know the **exact address (host\:port)** of each microservice.
@@ -944,11 +956,11 @@ As of now, our client application interacts **directly** with individual microse
   * Increases **inconsistency** and **duplicated effort** across services.
 
 
-### Enter API Gateway
+## Enter API Gateway
 
 An **API Gateway** is a single entry point for all client requests. It acts as a **reverse proxy** that routes incoming traffic to the appropriate microservice internally.
 
-#### Core Responsibilities
+### Core Responsibilities
 
 * **Request Routing**
   Routes incoming HTTP requests to the correct downstream service based on URL patterns or headers.
@@ -969,7 +981,7 @@ An **API Gateway** is a single entry point for all client requests. It acts as a
   * Monitoring / metrics
 
 
-#### Benefits of Using an API Gateway
+### Benefits of Using an API Gateway
 
 | Feature              | Without API Gateway             | With API Gateway                  |
 | -------------------- | ------------------------------- | --------------------------------- |
@@ -981,9 +993,9 @@ An **API Gateway** is a single entry point for all client requests. It acts as a
 | Port exposure        | Each service opens a port       | Only gateway does                 |
 
 
-### Real-World Scenario in MediCore
+## Real-World Scenario in MediCore
 
-#### Current Flow (Without Gateway):
+### Current Flow (Without Gateway):
 
 ```mermaid
 graph TD
@@ -996,7 +1008,7 @@ Client --> FutureServices[Future Services]
 * If a port or host changes → client config **breaks**
 * Security and maintainability issues increase
 
-#### Improved Flow (With API Gateway):
+### Improved Flow (With API Gateway):
 
 ```mermaid
 graph TD
@@ -1011,7 +1023,7 @@ graph TD
 * API Gateway handles all **internal routing logic**
 * We gain **security**, **flexibility**, and **future-proofing**
 
-### Configured Routes (as of now)
+## Configured Routes (as of now)
 
 | Route                        | Proxies To                                     |
 | ---------------------------- | ---------------------------------------------- |
@@ -1019,7 +1031,7 @@ graph TD
 | `/api-docs/medical-profiles` | `medical-profile-service:/v3/api-docs`         |
 
 
-### API Gateway Docker Integration
+## API Gateway Docker Integration
 
 The `api-gateway` is fully Dockerized and runs inside the **shared internal Docker network** of the MediCore system. This enables seamless service-to-service communication using container names as hostnames.
 
@@ -1028,7 +1040,7 @@ The `api-gateway` is fully Dockerized and runs inside the **shared internal Dock
 * Docker `--network=internal` ensures proper DNS resolution for service discovery.
 
 
-### Authentication via Gateway
+## Authentication via Gateway
 
 (In progress) The gateway will **delegate authentication/authorization** to a dedicated **Auth Service**.
 
@@ -1043,7 +1055,7 @@ Example Flow:
 This ensures that all services behind the gateway are **protected** without needing to implement auth logic in each microservice.
 
 
-### Implementation with Spring Cloud Gateway
+## Implementation with Spring Cloud Gateway
 
 We implemented the API gateway using **Spring Cloud Gateway**, a powerful, lightweight routing library built on top of Spring WebFlux.
 
@@ -1062,11 +1074,11 @@ Benefits of Spring Cloud Gateway:
 
 Routing rules are configured declaratively via `application.yml`.
 
-### Testing the API Gateway
+## Testing the API Gateway
 
 Once all services are running in the shared Docker network, you can test the API Gateway using any REST client (e.g., Postman, IntelliJ HTTP requests, curl).
 
-#### Verify Route Forwarding
+### Verify Route Forwarding
 
 Make sure these service's containers are running:
 
@@ -1076,7 +1088,7 @@ Make sure these service's containers are running:
 
 ![img.png](api-gateway/assets/imgA.png)
 
-#### Example: List All Medical Profiles
+### Example: List All Medical Profiles
 
 ```http
 GET http://localhost:8084/api/medical-profiles
@@ -1091,13 +1103,13 @@ Under the hood:
 * Internally routes to `http://medical-profile-service:8081/medical-profiles`
 
 
-#### Testing Swagger API Docs via Gateway
+### Testing Swagger API Docs via Gateway
 
 ![img.png](api-gateway/assets/img.png)
 
 This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
 
-### Summary
+## Summary
 
 | Without Gateway                        | With Gateway                 |
 | -------------------------------------- | ---------------------------- |
