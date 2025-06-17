@@ -896,14 +896,6 @@ This schema is shared with the `medical-profile-service` and version-controlled 
 
 The `medical-analytics-service` enhances the MediCore platform's responsiveness, scalability, and extensibility by processing events in a non-blocking, real-time manner. Its decoupled design allows future evolution — such as integrating with BI tools or machine learning pipelines — without impacting upstream services.
 
-### API Gateway Tech Stack
-
-* **Java 21**
-* **Spring Boot 3**
-* **Spring Cloud Gateway (Reactive)**
-* **Maven**
-* **Docker**
-
 ---
 
 ## API Gateway
