@@ -970,9 +970,10 @@ An **API Gateway** is a single entry point for all client requests. It acts as a
 #### Current Flow (Without Gateway):
 
 ```mermaid
-graph LR
-Client -> Medical Profile Service (direct REST call to port 8081)
-Client -> Analytics Service (must know port 8083)
+graph TD
+Client --> MedicalProfile[Medical Profile Service : direct REST call to port 8081]
+Client --> Analytics[Analytics Service : must know port 8083]
+Client --> FutureServices[Future Services]
 ```
 
 * Client must manage **multiple base URLs**
@@ -982,9 +983,13 @@ Client -> Analytics Service (must know port 8083)
 #### Improved Flow (With API Gateway):
 
 ```mermaid
-graph LR
-Client -> API Gateway -> [Medical Profile | Analytics | Future Services]
+graph TD
+  Client --> APIGateway
+  APIGateway --> MedicalProfile[Medical Profile Service]
+  APIGateway --> Analytics[Analytics Service]
+  APIGateway --> FutureServices[Future Services]
 ```
+ 
 
 * Client only needs to know: `http://api.medicore.com` (or similar)
 * API Gateway handles all **internal routing logic**
