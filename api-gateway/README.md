@@ -10,7 +10,7 @@ As of now, our client application interacts **directly** with individual microse
 - [Enter API Gateway](#enter-api-gateway)
 - [Benefits of Using an API Gateway](#benefits-of-using-an-api-gateway)
 - [Real-World Scenario in MediCore](#real-world-scenario-in-medicore)
-- [Configured Routes](#configured-routes)
+- [Configured Routes (as of now)](#configured-routes-as-of-now)
 - [API Gateway Docker Integration](#api-gateway-docker-integration)
 - [Authentication via Gateway](#authentication-via-gateway)
 - [Implementation with Spring Cloud Gateway](#implementation-with-spring-cloud-gateway)
