@@ -74,7 +74,7 @@ A microservice built with **Spring Boot 3.5.0**, **Java 21 (Oracle JDK)**, and *
 | Validation | Hibernate Validator  | Annotation-based request and entity validation     |
 | Docs       | SpringDoc OpenAPI    | Auto-generates Swagger UI from code annotations    |
 | Container  | Docker               | Containerization using multi-stage build           |
-| Messaging  | Kafka (planned)      | For event-driven communication between services    |
+| Messaging  | Kafka                | For event-driven communication between services    |
 | Cloud      | AWS (planned)        | For deploying microservices in the cloud           |
 
 
