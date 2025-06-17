@@ -896,11 +896,27 @@ This schema is shared with the `medical-profile-service` and version-controlled 
 
 The `medical-analytics-service` enhances the MediCore platform's responsiveness, scalability, and extensibility by processing events in a non-blocking, real-time manner. Its decoupled design allows future evolution — such as integrating with BI tools or machine learning pipelines — without impacting upstream services.
 
+### API Gateway Tech Stack
+
+* **Java 21**
+* **Spring Boot 3**
+* **Spring Cloud Gateway (Reactive)**
+* **Maven**
+* **Docker**
+
 ---
 
 ## API Gateway
 
 As of now, our client application interacts **directly** with individual microservices (e.g., `medical-profile-service`). While this works for small setups, it quickly becomes **unmanageable, insecure, and inflexible** as the number of microservices increases. This is where an **API Gateway** becomes essential.
+
+### API Gateway Tech Stack
+
+* **Java 21**
+* **Spring Boot 3**
+* **Spring Cloud Gateway (Reactive)**
+* **Maven**
+* **Docker**
 
 
 ### Problems with Direct Client-to-Microservice Communication
@@ -995,10 +1011,26 @@ graph TD
 * API Gateway handles all **internal routing logic**
 * We gain **security**, **flexibility**, and **future-proofing**
 
+### Configured Routes (as of now)
+
+| Route                        | Proxies To                                     |
+| ---------------------------- | ---------------------------------------------- |
+| `/api/medical-profiles/**`   | `medical-profile-service:/medical-profiles/**` |
+| `/api-docs/medical-profiles` | `medical-profile-service:/v3/api-docs`         |
+
+
+## API Gateway Docker Integration
+
+The `api-gateway` is fully Dockerized and runs inside the **shared internal Docker network** of the MediCore system. This enables seamless service-to-service communication using container names as hostnames.
+
+* Port **`8084`** is exposed externally for the gateway.
+* Other internal services (e.g., `medical-profile-service`) are **no longer exposed** directly to the outside world.
+* Docker `--network=internal` ensures proper DNS resolution for service discovery.
+
 
 ## Authentication via Gateway
 
-In a real production setup, the gateway can **delegate authentication/authorization** to a dedicated **Auth Service**.
+(In progress) The gateway will **delegate authentication/authorization** to a dedicated **Auth Service**.
 
 Example Flow:
 
@@ -1011,16 +1043,61 @@ Example Flow:
 This ensures that all services behind the gateway are **protected** without needing to implement auth logic in each microservice.
 
 
-## Next Step: Spring Cloud Gateway
+## Implementation with Spring Cloud Gateway
 
-We'll implement the API gateway using **Spring Cloud Gateway**, a powerful, lightweight routing library built on top of Spring WebFlux.
+We implemented the API gateway using **Spring Cloud Gateway**, a powerful, lightweight routing library built on top of Spring WebFlux.
 
-💡 Benefits of Spring Cloud Gateway:
+Benefits of Spring Cloud Gateway:
 
 * Easy configuration via YAML or Java DSL
-* Integrated with Spring ecosystem
-* Supports filters for pre/post processing
+* Seamless Spring Boot integration
+* Reactive, non-blocking architecture (WebFlux)
+* Flexible route predicates and filters(Supports filters for pre/post processing)
 * Works well with Spring Security and OAuth2
+* Out-of-the-box support for:
+
+  * StripPrefix, RewritePath, Circuit Breakers
+  * Rate limiting, request logging
+  * Path-based routing and header manipulation
+
+Routing rules are configured declaratively via `application.yml`.
+
+## Testing the API Gateway
+
+Once all services are running in the shared Docker network, you can test the API Gateway using any REST client (e.g., Postman, IntelliJ HTTP requests, curl).
+
+### Verify Route Forwarding
+
+Make sure these service's containers are running:
+
+* `api-gateway` (exposes `8084`)
+* `medical-profile-service` (internal only on Docker network)
+* `medical-profile-service-db`
+
+![img.png](api-gateway/assets/imgA.png)
+
+### Example: List All Medical Profiles
+
+```http
+GET http://localhost:8084/api/medical-profiles
+```
+
+![img.png](api-gateway/assets/imgB.png)
+
+Under the hood:
+
+* API Gateway receives the request on `/api/medical-profiles`
+* It strips the `/api` prefix
+* Internally routes to `http://medical-profile-service:8081/medical-profiles`
+
+
+### Testing Swagger API Docs via Gateway
+
+![img.png](api-gateway/assets/img.png)
+
+This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
+
+
 
 
 ## Summary
