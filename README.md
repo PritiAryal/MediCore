@@ -12,7 +12,7 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 | [Medical Profile Service](#medical-profile-service) | Manages medical profile data | Implemented  |
 | [Medical Billing Service](#medical-billing-service) | Manages medical billing data | Implemented  |
 | [Medical Analytics Service](#medical-analytics-service) | Consumes events for analytics | Implemented  |
-| [API Gateway](#api-gateway)   | Consumes events for analytics | Implementing |
+| [API Gateway](#api-gateway)   | single entry point for all client requests | Implementing |
 
 ---
 
