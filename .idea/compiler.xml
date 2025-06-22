@@ -9,6 +9,7 @@
         <module name="medical-profile-service" />
         <module name="api-gateway" />
         <module name="medical-billing-service" />
+        <module name="auth-service" />
         <module name="medical-analytics-service" />
       </profile>
     </annotationProcessing>
@@ -16,6 +17,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
       <module name="medical-analytics-service" options="-parameters" />
       <module name="medical-billing-service" options="-parameters" />
       <module name="medical-profile-service" options="-parameters" />
