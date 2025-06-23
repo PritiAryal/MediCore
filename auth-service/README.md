@@ -13,6 +13,8 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Auth Service Security Configuration](#auth-service-security-configuration)
 - [Auth Service Conclusion](#auth-service-conclusion)
 
+---
+
 ## Securing Microservices with JWT Authentication
 
 With the **API Gateway** now acting as the central entry point to our microservices architecture, the next critical step is to integrate a robust **authentication and authorization** mechanism. This will ensure that our services are **not publicly accessible** to unauthorized users and follow **secure, token-based access control**.
@@ -73,8 +75,6 @@ sequenceDiagram
     AuthService-->>APIGateway: Token invalid
     APIGateway-->>Client: 401 Unauthorized
 ```
-
----
 
 ### Why This Matters
 
