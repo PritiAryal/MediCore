@@ -1249,10 +1249,10 @@ This architecture:
 
 - HTTP requests tested locally via IntelliJ and Postman
 
-![Correct Password](assets/img1.png)
+![Correct Password](auth-service/assets/img1.png)
 
 
-![Incorrect Password](assets/img3.png)
+![Incorrect Password](auth-service/assets/img3.png)
 
 ---
 
@@ -1265,7 +1265,7 @@ This architecture:
   - Email: `testpriti@test.com`
   - Password: `password` (BCrypt-hashed)
 
-![img.png](assets/img.png)
+![img.png](auth-service/assets/img.png)
 
 ---
 
@@ -1283,7 +1283,7 @@ This architecture:
   - `JWT_SECRET`
 - Connected to `internal` Docker network for inter-service communication
 
-![img.png](assets/img2.png)
+![img.png](auth-service/assets/img2.png)
 
 ---
 
