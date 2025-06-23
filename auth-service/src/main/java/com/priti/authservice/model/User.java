@@ -20,16 +20,6 @@ public class User {
     @Column(nullable = false)
     private String role; //level of privileges when they login, admin, viewer, so on
 
-//    public User() {
-//    }
-//
-//    public User(UUID id, String email, String password, String role) {
-//        this.id = id;
-//        this.email = email;
-//        this.password = password;
-//        this.role = role;
-//    }
-
     public UUID getId() {
         return id;
     }
