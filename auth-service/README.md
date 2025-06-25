@@ -157,11 +157,11 @@ This architecture:
 
   * `200 OK` — Token is valid and signed with the correct secret.
 
-  ![img.png](assets/img5.png)
+![img.png](assets/img5.png)
 
   * `401 Unauthorized` — Token is missing, malformed, expired, or has an invalid signature.
 
-  ![img.png](assets/img6.png)
+![img.png](assets/img6.png)
 
 * Built with clean separation of concerns:
 

@@ -1267,11 +1267,11 @@ This architecture:
 
   * `200 OK` — Token is valid and signed with the correct secret.
 
-  ![img.png](auth-service/assets/img5.png)
+![img.png](auth-service/assets/img5.png)
 
   * `401 Unauthorized` — Token is missing, malformed, expired, or has an invalid signature.
 
-  ![img.png](auth-service/assets/img6.png)
+![img.png](auth-service/assets/img6.png)
 
 * Built with clean separation of concerns:
 
