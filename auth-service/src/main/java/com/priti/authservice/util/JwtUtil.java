@@ -1,10 +1,13 @@
 package com.priti.authservice.util;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -32,5 +35,18 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) //10 hours. We are setting the expiration time of the token to 10 hours from now
                 .signWith(secretKey)
                 .compact(); // compact() method is going to take all above properties and create a string and it will sign that string using the secret key and return sined string that is our JWT token
+    }
+
+    public void validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith((SecretKey) secretKey)// This is how we verify a token is valid or not. JWT package will parse the token and verify its signature using the secret key.
+                    .build() // build() method is used to create a parser instance
+                    .parseSignedClaims(token); // parseSignedClaims(token) method will parse the token and throw an exception if the token is invalid or expired
+
+        } catch (SignatureException e){
+            throw new JwtException("Invalid JWT signature");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid JWT");
+        }
     }
 }

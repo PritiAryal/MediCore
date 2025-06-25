@@ -8,6 +8,7 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Securing Microservices with JWT Authentication](#securing-microservices-with-jwt-authentication)
 - [Auth Service Tech Stack](#auth-service-tech-stack)
 - [Auth Service Features Implemented](#auth-service-features-implemented)
+- [Token Validation Endpoint for Gateway Integration](#token-validation-endpoint-for-gateway-integration)
 - [Auth Service Database Setup](#auth-service-database-setup)
 - [Auth Service Docker Integration](#auth-service-docker-integration)
 - [Auth Service Security Configuration](#auth-service-security-configuration)
@@ -135,6 +136,48 @@ This architecture:
 
 
 ![Incorrect Password](assets/img3.png)
+
+---
+
+
+---
+
+## Token Validation Endpoint for Gateway Integration
+
+* Introduced a dedicated `GET /validate` endpoint to **verify JWT tokens** received from client requests.
+* Designed specifically for **API Gateway integration**, allowing the gateway to validate tokens before routing to downstream services.
+* Follows standard authorization practices by accepting:
+
+  ```
+  Authorization: Bearer <JWT_TOKEN>
+  ```
+![img.png](assets/img4.png)  
+
+* Returns:
+
+  * `200 OK` — Token is valid and signed with the correct secret.
+
+  ![img.png](assets/img5.png)
+
+  * `401 Unauthorized` — Token is missing, malformed, expired, or has an invalid signature.
+
+  ![img.png](assets/img6.png)
+
+* Built with clean separation of concerns:
+
+  * `AuthController` handles the REST request.
+  * `AuthServiceImpl` delegates token checks to a reusable utility class.
+  * `JwtUtil` performs actual token parsing and signature verification using the `jjwt` library.
+
+* Follows defensive programming practices using structured exception handling for robust validation.
+* **Stateless and efficient** — no session tracking or in-memory state is required.
+* Enables **secure, token-based access control** across all services by centralizing JWT validation in a single trusted source.
+
+### Why It Matters
+
+This feature enables:
+
+* Better performance and maintainability by avoiding token parsing in every downstream service
 
 ---
 

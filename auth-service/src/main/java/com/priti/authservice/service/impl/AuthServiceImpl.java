@@ -5,6 +5,7 @@ import com.priti.authservice.model.User;
 import com.priti.authservice.service.AuthService;
 import com.priti.authservice.service.UserService;
 import com.priti.authservice.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,15 @@ public class AuthServiceImpl implements AuthService {
                 .map(u -> jwtUtil.generateToken(u.getEmail(), u.getRole())); //generates token using user's email and role. we have to create jwtutil class.
 
         return token;
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        try {
+            jwtUtil.validateToken(token); // This method will throw an exception if the token is invalid
+            return true; // If no exception is thrown, the token is valid
+        } catch (JwtException e) {
+            return false; // If an exception is thrown, the token is invalid
+        }
     }
 }
