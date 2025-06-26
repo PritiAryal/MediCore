@@ -1067,6 +1067,31 @@ graph TD
     GW -->|/validate| AUTH
     GW -->|/medical-profiles| PROFILE
 ```
+```mermaid
+graph TD
+subgraph External Client
+CLIENT[Client App / REST Client]
+end
+
+    subgraph Gateway Layer
+        GATEWAY[API Gateway\n Exposed on :8084]
+    end
+
+    subgraph Internal Private Network
+        AUTH[Auth Service\n No exposed port]
+        PROFILE[Medical Profile Service]
+    end
+
+    %% External Requests
+    CLIENT -->|POST /auth/login| GATEWAY
+    CLIENT -->|GET /auth/validate| GATEWAY
+    CLIENT -->|GET /api/medical-profiles| GATEWAY
+
+    %% Gateway Routing
+    GATEWAY -->|Forward to /login| AUTH
+    GATEWAY -->|Forward to /validate| AUTH
+    GATEWAY -->|Forward to /medical-profiles| PROFILE
+```
 
 ### Example Gateway Routing Behavior
 
