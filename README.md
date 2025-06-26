@@ -1053,7 +1053,7 @@ graph TD
     GW[API Gateway port 8084]
 
     %% Internal services
-    AUTH[Auth Service (internal only)]
+    AUTH[Auth Service internal only]
     PROFILE[Medical Profile Service]
 
     %% Client routes to gateway
