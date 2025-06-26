@@ -5,6 +5,16 @@ spring:
   cloud:
     gateway:
       routes:
+        ## REST CLIENT -> http://localhost:8084/auth/login
+        ## API GATEWAY WILL REWRITE THE REQUEST SO IT CAN CALL INTERNAL ADDRESS OF AUTH-SERVICE THE WAY AUTH-SERVICE MICROSERVICE EXPECTS.
+        ## API GATEWAY -> http://auth-service:8085/login
+        - id: auth-service-route
+          uri: http://auth-service:8085
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+
         ## REST CLIENT -> http://localhost:8084/api/medical-profiles
         ## API GATEWAY WILL REWRITE THE REQUEST SO IT CAN CALL INTERNAL ADDRESS OF MEDICAL-PROFILE-SERVICE THE WAY MEDICAL-PROFILE-SERVICE MICROSERVICE EXPECTS.
         ## API GATEWAY -> http://medical-profiles-service:8081/medical-profiles
