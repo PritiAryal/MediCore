@@ -12,6 +12,7 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Auth Service Database Setup](#auth-service-database-setup)
 - [Auth Service Docker Integration](#auth-service-docker-integration)
 - [Auth Service Security Configuration](#auth-service-security-configuration)
+- [Routing Auth Service Through API Gateway](#routing-auth-service-through-api-gateway)
 - [Auth Service Conclusion](#auth-service-conclusion)
 
 ---
@@ -218,6 +219,57 @@ This feature enables:
 - All requests are permitted at auth-service level (trusted traffic from gateway only)
 - Spring Security filter chain customized
 - Separation of concerns: AuthService validates tokens, downstream services remain clean
+
+---
+
+## Routing Auth Service Through API Gateway
+
+To enforce strict traffic flow and improve security posture, the `auth-service` is fully integrated behind the API Gateway. This ensures that **no external traffic can communicate directly with the auth-service**. All communication must flow through the gateway.
+
+
+### Gateway Routing Configuration
+
+The API Gateway (`api-gateway`) has been configured to forward any request matching the `/auth/**` path to the internal address of the `auth-service`. The URI is rewritten to match how the service expects it.
+
+> This route ensures the following:
+>
+> * Requests like `/auth/login` and `/auth/validate` are forwarded to `auth-service:/login` and `/validate` respectively.
+> * External consumers only interact with `localhost:8084` (gateway).
+> * Internals remain protected via Docker networking — the `auth-service` is no longer exposed to the outside.
+
+### Updated Test Clients
+
+Updated `.http` files to verify functionality through the gateway:
+
+**login.http**
+
+```http
+### Login request to retrieve a token
+POST http://localhost:8084/auth/login
+```
+
+![img.png](assets/imgX.png)
+
+**validate.http**
+
+```http
+### Get request to validate Token
+GET http://localhost:8084/auth/validate
+```
+![img.png](assets/imgY.png)
+
+### Runtime Behavior
+
+* Both `/auth/login` and `/auth/validate` were successfully tested through the gateway.
+* Auth service container no longer exposes any ports.
+* API Gateway is now the **sole entry point** for authentication and token validation.
+
+### Why This Matters
+
+* **Improves security** by blocking direct access to core services
+* **Centralizes routing and control** for all client interactions
+* **Simulates real-world cloud architecture** where services live on private internal networks
+* **Gateway becomes the enforcement layer** for all access policies
 
 ---
 

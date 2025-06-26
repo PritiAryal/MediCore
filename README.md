@@ -911,6 +911,7 @@ As of now, our client application interacts **directly** with individual microse
 - [Real-World Scenario in MediCore](#real-world-scenario-in-medicore)
 - [Configured Routes (as of now)](#configured-routes-as-of-now)
 - [API Gateway Docker Integration](#api-gateway-docker-integration)
+- [Securing Auth Service Behind API Gateway](#securing-auth-service-behind-api-gateway)
 - [Authentication via Gateway](#authentication-via-gateway)
 - [Implementation with Spring Cloud Gateway](#implementation-with-spring-cloud-gateway)
 - [Testing the API Gateway](#testing-the-api-gateway)
@@ -1033,6 +1034,64 @@ The `api-gateway` is fully Dockerized and runs inside the **shared internal Dock
 * Other internal services (e.g., `medical-profile-service`) are **no longer exposed** directly to the outside world.
 * Docker `--network=internal` ensures proper DNS resolution for service discovery.
 
+## Securing Auth Service Behind API Gateway
+
+To strengthen the system's security posture and simplify external communication, the `auth-service` is now fully routed through the **API Gateway**. This means:
+
+* All authentication operations must go through the gateway (`/auth/login`, `/auth/validate`)
+* The `auth-service` is **no longer exposed** to the internet — only available via internal Docker networking
+* Ensures all traffic is **centrally logged, validated, and controlled**
+
+### Updated Architecture Diagram
+
+```mermaid
+graph TD
+    subgraph External Client
+        A1[Client App / REST Client]
+    end
+
+    subgraph Gateway Layer
+        GW[API Gateway (port 8084)]
+    end
+
+    subgraph Internal Network (Docker)
+        AUTH[Auth Service (no exposed port)]
+        PROFILE[Medical Profile Service]
+    end
+
+    A1 -->|POST /auth/login| GW
+    A1 -->|GET /auth/validate| GW
+    A1 -->|GET /api/medical-profiles| GW
+
+    GW -->|/login| AUTH
+    GW -->|/validate| AUTH
+    GW -->|/medical-profiles| PROFILE
+```
+
+### Example Gateway Routing Behavior
+
+| External Request     | Internally Routed To     |
+| -------------------- | ------------------------ |
+| `POST /auth/login`   | `auth-service:/login`    |
+| `GET /auth/validate` | `auth-service:/validate` |
+
+
+### Tested Behavior
+
+* `POST /auth/login` through the gateway successfully returns a signed JWT.
+* `GET /auth/validate` through the gateway validates the JWT and returns `200 OK` or `401 Unauthorized`.
+* The `auth-service` container **no longer exposes any ports** externally. All calls must pass through the gateway.
+
+### Why This Matters
+
+| Benefit                   | Description                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------- |
+| Centralized security       | Auth service is shielded from public traffic                                       |
+| Cleaner client interaction | Clients only use a single URL (gateway), reducing complexity                       |
+| Easier scaling             | New services can be added and routed without exposing ports or changing clients    |
+| Better production hygiene  | Matches how large-scale microservices work in real-world containerized deployments |
+
+
 
 ## Authentication via Gateway
 
@@ -1078,8 +1137,12 @@ Make sure these service's containers are running:
 * `api-gateway` (exposes `8084`)
 * `medical-profile-service` (internal only on Docker network)
 * `medical-profile-service-db`
+* `auth-service` (internal only on Docker network)
+* `auth-service-db`
 
 ![img.png](api-gateway/assets/imgA.png)
+
+![img.png](api-gateway/assets/imgZ.png)
 
 ### Example: List All Medical Profiles
 
@@ -1101,6 +1164,20 @@ Under the hood:
 ![img.png](api-gateway/assets/img.png)
 
 This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
+
+### Example: Authenticate User
+
+```http
+POST http://localhost:8084/auth/login
+```
+
+![img.png](api-gateway/assets/imgX.png)
+
+```http
+POST http://localhost:8084/auth/va
+```
+
+![img.png](api-gateway/assets/imgY.png)
 
 ## API Gateway Summary
 
@@ -1129,6 +1206,7 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Auth Service Database Setup](#auth-service-database-setup)
 - [Auth Service Docker Integration](#auth-service-docker-integration)
 - [Auth Service Security Configuration](#auth-service-security-configuration)
+- [Routing Auth Service Through API Gateway](#routing-auth-service-through-api-gateway)
 - [Auth Service Conclusion](#auth-service-conclusion)
 
 
@@ -1325,6 +1403,55 @@ This feature enables:
 - All requests are permitted at auth-service level (trusted traffic from gateway only)
 - Spring Security filter chain customized
 - Separation of concerns: AuthService validates tokens, downstream services remain clean
+
+## Routing Auth Service Through API Gateway
+
+To enforce strict traffic flow and improve security posture, the `auth-service` is fully integrated behind the API Gateway. This ensures that **no external traffic can communicate directly with the auth-service**. All communication must flow through the gateway.
+
+
+### Gateway Routing Configuration
+
+The API Gateway (`api-gateway`) has been configured to forward any request matching the `/auth/**` path to the internal address of the `auth-service`. The URI is rewritten to match how the service expects it.
+
+> This route ensures the following:
+>
+> * Requests like `/auth/login` and `/auth/validate` are forwarded to `auth-service:/login` and `/validate` respectively.
+> * External consumers only interact with `localhost:8084` (gateway).
+> * Internals remain protected via Docker networking — the `auth-service` is no longer exposed to the outside.
+
+### Updated Test Clients
+
+Updated `.http` files to verify functionality through the gateway:
+
+**login.http**
+
+```http
+### Login request to retrieve a token
+POST http://localhost:8084/auth/login
+```
+
+![img.png](auth-service/assets/imgX.png)
+
+**validate.http**
+
+```http
+### Get request to validate Token
+GET http://localhost:8084/auth/validate
+```
+![img.png](auth-service/assets/imgY.png)
+
+### Runtime Behavior
+
+* Both `/auth/login` and `/auth/validate` were successfully tested through the gateway.
+* Auth service container no longer exposes any ports.
+* API Gateway is now the **sole entry point** for authentication and token validation.
+
+### Why This Matters
+
+* **Improves security** by blocking direct access to core services
+* **Centralizes routing and control** for all client interactions
+* **Simulates real-world cloud architecture** where services live on private internal networks
+* **Gateway becomes the enforcement layer** for all access policies
 
 
 ## Auth Service Conclusion
