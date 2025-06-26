@@ -1054,7 +1054,7 @@ graph TD
         GW[API Gateway : port 8084]
     end
 
-    subgraph Internal Network (Docker)
+    subgraph Internal Network Docker
         AUTH[Auth Service : no exposed port]
         PROFILE[Medical Profile Service]
     end
