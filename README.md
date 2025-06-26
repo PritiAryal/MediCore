@@ -1044,29 +1044,50 @@ To strengthen the system's security posture and simplify external communication,
 
 ### Updated Architecture Diagram
 
-```mermaid
-graph TD
-    subgraph External Client
-        A1[Client App / REST Client]
-    end
+[//]: # ()
+[//]: # (```mermaid)
 
-    subgraph Gateway Layer
-        GW[API Gateway : port 8084]
-    end
+[//]: # (graph TD)
 
-    subgraph Internal Network Docker
-        AUTH[Auth Service : no exposed port]
-        PROFILE[Medical Profile Service]
-    end
+[//]: # (    subgraph External Client)
 
-    A1 -->|POST /auth/login| GW
-    A1 -->|GET /auth/validate| GW
-    A1 -->|GET /api/medical-profiles| GW
+[//]: # (        A1[Client App / REST Client])
 
-    GW -->|/login| AUTH
-    GW -->|/validate| AUTH
-    GW -->|/medical-profiles| PROFILE
-```
+[//]: # (    end)
+
+[//]: # ()
+[//]: # (    subgraph Gateway Layer)
+
+[//]: # (        GW[API Gateway : port 8084])
+
+[//]: # (    end)
+
+[//]: # ()
+[//]: # (    subgraph Internal Network Docker)
+
+[//]: # (        AUTH[Auth Service : no exposed port])
+
+[//]: # (        PROFILE[Medical Profile Service])
+
+[//]: # (    end)
+
+[//]: # ()
+[//]: # (    A1 -->|POST /auth/login| GW)
+
+[//]: # (    A1 -->|GET /auth/validate| GW)
+
+[//]: # (    A1 -->|GET /api/medical-profiles| GW)
+
+[//]: # ()
+[//]: # (    GW -->|/login| AUTH)
+
+[//]: # (    GW -->|/validate| AUTH)
+
+[//]: # (    GW -->|/medical-profiles| PROFILE)
+
+[//]: # (```)
+
+
 ```mermaid
 graph TD
 subgraph External Client
@@ -1079,7 +1100,7 @@ end
 
     subgraph Internal Private Network
         AUTH[Auth Service No exposed port]
-        PROFILE[Medical Profile Service]
+        PROFILE[Medical Profile Service No exposed port]
     end
 
     %% External Requests
