@@ -1046,26 +1046,27 @@ To strengthen the system's security posture and simplify external communication,
 
 ```mermaid
 graph TD
-    subgraph External Client
-        A1[Client App / REST Client]
-    end
+    %% External client
+    A1[Client App / REST Client]
 
-    subgraph Gateway Layer
-        GW[API Gateway (port 8084)]
-    end
+    %% API Gateway
+    GW[API Gateway (port 8084)]
 
-    subgraph Internal Network (Docker)
-        AUTH[Auth Service (no exposed port)]
-        PROFILE[Medical Profile Service]
-    end
+    %% Internal services
+    AUTH[Auth Service (internal only)]
+    PROFILE[Medical Profile Service]
 
+    %% Client routes to gateway
     A1 -->|POST /auth/login| GW
     A1 -->|GET /auth/validate| GW
     A1 -->|GET /api/medical-profiles| GW
+    A1 -->|GET /api-docs/medical-profiles| GW
 
+    %% Gateway routes internally
     GW -->|/login| AUTH
     GW -->|/validate| AUTH
     GW -->|/medical-profiles| PROFILE
+    GW -->|/api-docs/medical-profiles| PROFILE
 ```
 
 ### Example Gateway Routing Behavior
