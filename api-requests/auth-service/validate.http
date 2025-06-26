@@ -1,4 +1,4 @@
 ### Get request to validate Token
-#GET http://localhost:8085/validate
+#GET http://localhost:8085/validate (auth)
 GET http://localhost:8084/auth/validate
 Authorization: Bearer {{token}}

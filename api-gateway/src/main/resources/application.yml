@@ -8,6 +8,7 @@ spring:
         ## REST CLIENT -> http://localhost:8084/auth/login
         ## API GATEWAY WILL REWRITE THE REQUEST SO IT CAN CALL INTERNAL ADDRESS OF AUTH-SERVICE THE WAY AUTH-SERVICE MICROSERVICE EXPECTS.
         ## API GATEWAY -> http://auth-service:8085/login
+        ## AUTH SERVICE (SPRING BOOT APP) -> /auth/login -> Login Response
         - id: auth-service-route
           uri: http://auth-service:8085
           predicates:
@@ -18,7 +19,7 @@ spring:
         ## REST CLIENT -> http://localhost:8084/api/medical-profiles
         ## API GATEWAY WILL REWRITE THE REQUEST SO IT CAN CALL INTERNAL ADDRESS OF MEDICAL-PROFILE-SERVICE THE WAY MEDICAL-PROFILE-SERVICE MICROSERVICE EXPECTS.
         ## API GATEWAY -> http://medical-profiles-service:8081/medical-profiles
-        ## MEDICAL PROFILE SERVICE (SPRING BOOT APP) -> /medica-profile -> Medical Profiles Array
+        ## MEDICAL PROFILE SERVICE (SPRING BOOT APP) -> /medical-profile -> Medical Profiles Array
         - id: medical-profile-service-route
           uri: http://medical-profile-service:8081
           predicates:
