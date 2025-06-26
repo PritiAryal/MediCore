@@ -1050,7 +1050,7 @@ graph TD
     A1[Client App / REST Client]
 
     %% API Gateway
-    GW[API Gateway (port 8084)]
+    GW[API Gateway port 8084]
 
     %% Internal services
     AUTH[Auth Service (internal only)]
@@ -1066,7 +1066,7 @@ graph TD
     GW -->|/login| AUTH
     GW -->|/validate| AUTH
     GW -->|/medical-profiles| PROFILE
-    GW -->|/api-docs/medical-profiles| PROFILE
+    GW -->|/v3/api-docs| PROFILE
 ```
 
 ### Example Gateway Routing Behavior
