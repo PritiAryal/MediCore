@@ -1074,11 +1074,11 @@ CLIENT[Client App / REST Client]
 end
 
     subgraph Gateway Layer
-        GATEWAY[API Gateway\n Exposed on :8084]
+        GATEWAY[API Gateway\n(Exposed on :8084)]
     end
 
     subgraph Internal Private Network
-        AUTH[Auth Service\n No exposed port]
+        AUTH[Auth Service\n(No exposed port)]
         PROFILE[Medical Profile Service]
     end
 
