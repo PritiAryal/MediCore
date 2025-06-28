@@ -1164,15 +1164,25 @@ This filter is registered declaratively in the `application.yml` of the gateway 
 
 The gateway will **delegate authentication/authorization** to a dedicated **Auth Service**.
 
-```plaintext
-Client → Gateway (GET /api/medical-profiles with Bearer token)
-        |
-        └─> [Global Filter]
-              ├─ Is this path protected? (yes)
-              ├─ Extract token
-              ├─ Call AuthService:/validate with token
-              ├─ If valid → route to medical-profile-service
-              └─ If invalid → return 401 Unauthorized
+```mermaid
+%%Client → Gateway (GET /api/medical-profiles with Bearer token)
+%%        |
+%%        └─> [Global Filter]
+%%              ├─ Is this path protected? (yes)
+%%              ├─ Extract token
+%%              ├─ Call AuthService:/validate with token
+%%              ├─ If valid → route to medical-profile-service
+%%              └─ If invalid → return 401 Unauthorized
+graph TD
+    A[Client Request: GET /api/medical-profiles\nAuthorization: Bearer <token>] --> B[API Gateway]
+    B --> C[Global Filter Intercepts]
+    C --> D{Is path protected?}
+    D -- Yes --> E[Extract Bearer token]
+    E --> F[Call AuthService: /validate]
+    F --> G{Is token valid?}
+    G -- Yes --> H[Route to medical-profile-service]
+    G -- No --> I[Return 401 Unauthorized]
+
 ```
 
 ```mermaid
@@ -1183,7 +1193,7 @@ sequenceDiagram
     participant AuthService
     participant MedicalProfileService
 
-    Client->>Gateway: GET /api/medical-profiles\nAuthorization: Bearer <token>
+    Client->>Gateway: GET /api/medical-profiles with Authorization: Bearer <token>
     Gateway->>Filter: Global Filter Triggered
     Filter->>Filter: Is path protected? → Yes
     Filter->>Filter: Extract Bearer Token
@@ -1217,26 +1227,29 @@ This is the equivalent of having a **firewall with identity enforcement** in rea
 
 ```mermaid
 flowchart TD
-    subgraph External [External Clients]
-        CLIENT[Client App / REST Client]
-    end
+  subgraph External [External Clients]
+    CLIENT[Client App / REST Client]
+  end
 
-    subgraph Gateway [API Gateway :port 8084]
-        GW
-    end
+  subgraph Gateway [API Gateway: port 8084]
+    GW
+  end
 
-    subgraph InternalNetwork [Docker Internal Network]
-        AUTH[Auth Service: internal only]
-        PROFILE[Medical Profile Service]
-    end
+  subgraph InternalNetwork [Docker Internal Network]
+    AUTH[Auth Service: internal only]
+    PROFILE[Medical Profile Service]
+  end
 
-    CLIENT -->|POST /auth/login| GW
-    CLIENT -->|GET /auth/validate| GW
-    CLIENT -->|GET /api/medical-profiles| GW
+  CLIENT -->|POST /auth/login| GW
+  CLIENT -->|GET /auth/validate| GW
+  CLIENT -->|GET /api/medical-profiles| GW
 
-    GW -->|Forward /auth/login| AUTH
-    GW -->|Forward /auth/validate| AUTH
-    GW -->|Call /validate → then forward /medical-profiles| PROFILE
+  GW -->|Forward /auth/login| AUTH
+  GW -->|Forward /auth/validate| AUTH
+  GW -->|Call /validate → then forward /medical-profiles| PROFILE:::highlight
+
+  classDef highlight fill:#D5FFFF;
+
 ```
 
 
