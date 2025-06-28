@@ -1226,7 +1226,7 @@ flowchart TD
     end
 
     subgraph InternalNetwork [Docker Internal Network]
-        AUTH[Auth Service (internal only)]
+        AUTH[Auth Service: internal only]
         PROFILE[Medical Profile Service]
     end
 
