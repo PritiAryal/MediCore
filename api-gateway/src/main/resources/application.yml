@@ -26,6 +26,7 @@ spring:
             - Path=/api/medical-profiles/**
           filters:
             - StripPrefix=1
+            - JwtValidation
 
 
         ## REST CLIENT -> http://localhost:8084/api-docs/medical-profiles

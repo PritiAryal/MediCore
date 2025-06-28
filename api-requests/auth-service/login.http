@@ -1,6 +1,5 @@
 ### Login request to retrieve a token
-#POST http://localhost:8085/login (Auth)
-POST http://localhost:8084/auth/login
+#POST http://localhost:8085/login (Auth)OST http://localhost:8084/auth/login
 Content-Type: application/json
 
 {
@@ -9,5 +8,6 @@ Content-Type: application/json
 }
 
 > {% client.global.set("token", response.body.token) %}
+
 ### This is going to make request as usual and then parse the response to extract the token and store it in a global variable named `token`.
 ### Now we can create http request file for validate request.
