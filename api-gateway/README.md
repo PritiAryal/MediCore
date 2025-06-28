@@ -209,17 +209,98 @@ end
 
 ## Authentication via Gateway
 
-(In progress) The gateway will **delegate authentication/authorization** to a dedicated **Auth Service**.
+To secure internal microservices (like the Medical Profile Service), we integrated a robust JWT validation mechanism via a **custom global filter** in the API Gateway.
 
-Example Flow:
+### Goals:
 
-1. Client sends a request to create a medical profile
-2. API Gateway intercepts it
-3. Gateway calls Auth Service to validate the token/permissions
-4. If valid → forwards request to `medical-profile-service`
-5. If not → rejects the request
+* Ensure only authenticated clients can access protected services
+* Centralize token validation logic to keep downstream services clean
+* Prevent direct client access to `auth-service` or other internal endpoints
+
+### JWT Validation Filter Flow
+
+All protected routes (like `/api/medical-profiles/**`) are guarded by a custom filter (`JwtValidation`) that performs the following:
+
+1. **Intercepts** each incoming request to a protected route.
+2. **Extracts** the `Authorization: Bearer <token>` header.
+3. **Calls** the `/validate` endpoint of the `auth-service` using a non-blocking WebClient.
+4. **Proceeds** only if the token is valid; otherwise responds with a `401 Unauthorized`.
+
+This filter is registered declaratively in the `application.yml` of the gateway under route configuration. Unauthorized access is gracefully handled via a global `@RestControllerAdvice`.
+
+#### How It Works – High-Level Flow
+
+The gateway will **delegate authentication/authorization** to a dedicated **Auth Service**.
+
+```plaintext
+Client → Gateway (GET /api/medical-profiles with Bearer token)
+        |
+        └─> [Global Filter]
+              ├─ Is this path protected? (yes)
+              ├─ Extract token
+              ├─ Call AuthService:/validate with token
+              ├─ If valid → route to medical-profile-service
+              └─ If invalid → return 401 Unauthorized
+```
 
 This ensures that all services behind the gateway are **protected** without needing to implement auth logic in each microservice.
+
+### Why We Do This in the Gateway
+
+
+| Without Global Filter                     | With Global JWT Filter in Gateway          |
+| ----------------------------------------- | ------------------------------------------ |
+| Each service must validate JWT itself     | Gateway centralizes token validation logic |
+| Security logic duplicated in each service | Security logic is maintained in one place  |
+| Exposes each service to possible misuse   | Gateway is the single enforcement layer    |
+
+This is the equivalent of having a **firewall with identity enforcement** in real production architecture.
+
+
+### Architecture Diagram Authentication via Gateway
+
+```mermaid
+flowchart TD
+    subgraph External [External Clients]
+        CLIENT[Client App / REST Client]
+    end
+
+    subgraph Gateway [API Gateway (port 8084)]
+        GW
+    end
+
+    subgraph InternalNetwork [Docker Internal Network]
+        AUTH[Auth Service (internal only)]
+        PROFILE[Medical Profile Service]
+    end
+
+    CLIENT -->|POST /auth/login| GW
+    CLIENT -->|GET /auth/validate| GW
+    CLIENT -->|GET /api/medical-profiles| GW
+
+    GW -->|Forward /auth/login| AUTH
+    GW -->|Forward /auth/validate| AUTH
+    GW -->|Call /validate → then forward /medical-profiles| PROFILE
+```
+
+
+## Route Configuration
+
+| Route                      | Destination                                 | Description                         | Security |
+| -------------------------- | ------------------------------------------- | ----------------------------------- | -------- |
+| `/auth/login`              | `auth-service:/login`                       | Issues JWT token                    | Public   |
+| `/auth/validate`           | `auth-service:/validate`                    | Validates token                     | Public   |
+| `/api/medical-profiles/**` | `medical-profile-service:/medical-profiles` | Protected medical profile endpoints |  Yes   |
+
+
+### Docker Integration
+
+* **Exposed Port**: Only `api-gateway` exposes port `8084` externally.
+* **Auth Service**: Runs internally and is only accessible from inside the Docker network.
+* **Gateway → Auth-Service**: Uses container DNS (`auth-service`) for internal validation.
+* **Environment Variable**: `AUTH_SERVICE_URL` is passed to the gateway at runtime to allow the filter to locate the Auth Service.
+
+Docker networking ensures clean inter-service communication and prevents unauthorized traffic to internal services.
 
 ---
 
@@ -262,7 +343,7 @@ Make sure these service's containers are running:
 
 ![img.png](assets/imgZ.png)
 
-### Example: List All Medical Profiles
+### Test: List All Medical Profiles
 
 ```http
 GET http://localhost:8084/api/medical-profiles
@@ -284,7 +365,7 @@ Under the hood:
 
 This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
 
-### Example: Authenticate User
+### Test: Authenticate User
 
 ```http
 POST http://localhost:8084/auth/login
@@ -297,6 +378,20 @@ POST http://localhost:8084/auth/va
 ```
 
 ![img.png](assets/imgY.png)
+
+### Test: Access Protected Route using Global JWT Filter in the gateway to validate JWTs for all protected downstream routes
+
+![img.png](assets/img_4.png)
+
+![img_1.png](assets/img_1.png)
+
+Valid Token:
+![img_2.png](assets/img_2.png)
+
+Invalid Token: 
+![img_3.png](assets/img_3.png)
+
+This confirms that the JWT validation filter is working correctly, allowing access to protected routes only with valid tokens.
 
 ---
 
