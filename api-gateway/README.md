@@ -243,6 +243,30 @@ Client → Gateway (GET /api/medical-profiles with Bearer token)
               └─ If invalid → return 401 Unauthorized
 ```
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant Filter
+    participant AuthService
+    participant MedicalProfileService
+
+    Client->>Gateway: GET /api/medical-profiles\nAuthorization: Bearer <token>
+    Gateway->>Filter: Global Filter Triggered
+    Filter->>Filter: Is path protected? → Yes
+    Filter->>Filter: Extract Bearer Token
+    Filter->>AuthService: GET /validate with token
+    alt Token is valid
+        Filter->>Gateway: Allow request to proceed
+        Gateway->>MedicalProfileService: Forward Request
+        MedicalProfileService-->>Gateway: 200 OK
+        Gateway-->>Client: 200 OK
+    else Token is invalid
+        Filter-->>Gateway: Return 401 Unauthorized
+        Gateway-->>Client: 401 Unauthorized
+    end
+```
+
 This ensures that all services behind the gateway are **protected** without needing to implement auth logic in each microservice.
 
 ### Why We Do This in the Gateway
@@ -265,7 +289,7 @@ flowchart TD
         CLIENT[Client App / REST Client]
     end
 
-    subgraph Gateway [API Gateway (port 8084)]
+    subgraph Gateway [API Gateway: port 8084]
         GW
     end
 
@@ -293,9 +317,8 @@ flowchart TD
 | `/api/medical-profiles/**` | `medical-profile-service:/medical-profiles` | Protected medical profile endpoints |  Yes   |
 
 
-### Docker Integration
-
-* **Exposed Port**: Only `api-gateway` exposes port `8084` externally.
+### Docker Integration for Authentication via Gateway
+The API Gateway and Auth Service are both Dockerized and run in the same internal Docker network. This allows them to communicate securely without exposing the Auth Service to the public internet.
 * **Auth Service**: Runs internally and is only accessible from inside the Docker network.
 * **Gateway → Auth-Service**: Uses container DNS (`auth-service`) for internal validation.
 * **Environment Variable**: `AUTH_SERVICE_URL` is passed to the gateway at runtime to allow the filter to locate the Auth Service.
