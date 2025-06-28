@@ -1174,7 +1174,7 @@ The gateway will **delegate authentication/authorization** to a dedicated **Auth
 %%              ├─ If valid → route to medical-profile-service
 %%              └─ If invalid → return 401 Unauthorized
 graph TD
-    A[Client Request: GET /api/medical-profiles\nAuthorization: Bearer <token>] --> B[API Gateway]
+    A[Client Request: GET /api/medical-profiles with Authorization: Bearer <token>] --> B[API Gateway]
     B --> C[Global Filter Intercepts]
     C --> D{Is path protected?}
     D -- Yes --> E[Extract Bearer token]
