@@ -113,24 +113,9 @@ mvn test
 
 Or from IntelliJ using the green run icons on the test methods.
 
-### Pre-requisites:
-- All services running (API Gateway: `localhost:8084`)
-- Database seeded with user:
-    - **Email**: `testpriti@test.com`
-    - **Password**: `password123`
-
 ---
 
 ## Integration Tests Output
-
-```bash
-[INFO] --- maven-surefire-plugin: Running AuthIntegrationTest
-Generated Token: eyJhbGciOiJIUzI1NiJ9...
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-
-[INFO] --- maven-surefire-plugin: Running MedicalProfileIntegrationTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-```
 
 All tests should pass if the system is configured correctly as shown in following image.
 
