@@ -10,6 +10,7 @@
         <module name="api-gateway" />
         <module name="medical-billing-service" />
         <module name="auth-service" />
+        <module name="integration-tests" />
         <module name="medical-analytics-service" />
       </profile>
     </annotationProcessing>
