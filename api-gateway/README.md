@@ -130,7 +130,8 @@ graph TD
 |------------------------------|------------------------------------------------|
 | `/api/medical-profiles/**`   | `medical-profile-service:/medical-profiles/**` |
 | `/api-docs/medical-profiles` | `medical-profile-service:/v3/api-docs`         |
-| `/auth/**`                   | `auth-service:/`                   |
+| `/auth/**`                   | `auth-service:/`                               |
+| `/api-docs/auth`             | `auth-servicee:/v3/api-docs`                   |
 
 ---
 
@@ -435,6 +436,8 @@ Under the hood:
 ### Testing Swagger API Docs via Gateway
 
 ![img.png](assets/img.png)
+
+![img.png](assets/imgC.png)
 
 
 

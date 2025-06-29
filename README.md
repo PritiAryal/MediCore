@@ -1024,6 +1024,8 @@ graph TD
 | ---------------------------- | ---------------------------------------------- |
 | `/api/medical-profiles/**`   | `medical-profile-service:/medical-profiles/**` |
 | `/api-docs/medical-profiles` | `medical-profile-service:/v3/api-docs`         |
+| `/auth/**`                   | `auth-service:/`                               |
+| `/api-docs/auth`             | `auth-servicee:/v3/api-docs`                   |
 
 
 ## API Gateway Docker Integration
@@ -1325,6 +1327,8 @@ Under the hood:
 
 ![img.png](api-gateway/assets/img.png)
 
+![img.png](api-gateway/assets/imgC.png)
+
 This confirms that API Gateway is successfully forwarding to internal documentation endpoints too.
 
 ### Test: Authenticate User
@@ -1385,6 +1389,7 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Auth Service Docker Integration](#auth-service-docker-integration)
 - [Auth Service Security Configuration](#auth-service-security-configuration)
 - [Routing Auth Service Through API Gateway](#routing-auth-service-through-api-gateway)
+- [Exposing Auth Service Swagger API Docs via Gateway](#exposing-auth-service-swagger-api-docs-via-gateway)
 - [Auth Service Conclusion](#auth-service-conclusion)
 
 
@@ -1630,6 +1635,26 @@ GET http://localhost:8084/auth/validate
 * **Centralizes routing and control** for all client interactions
 * **Simulates real-world cloud architecture** where services live on private internal networks
 * **Gateway becomes the enforcement layer** for all access policies
+
+
+## Exposing Auth Service Swagger API Docs via Gateway
+
+The `auth-service` Swagger/OpenAPI spec is exposed through the API Gateway, allowing consumers and tools (like Swagger UI or codegen clients) to inspect or auto-generate integrations.
+
+### Gateway YAML Route:
+```yaml
+- id: api-docs-auth-route
+  uri: http://auth-service:8085
+  predicates:
+    - Path=/api-docs/auth
+  filters:
+    - RewritePath=/api-docs/auth,/v3/api-docs
+```
+
+### Test:
+Go to `http://localhost:8084/api-docs/auth` to see the OpenAPI JSON output.
+
+![img.png](auth-service/assets/imgZ.png)
 
 
 ## Auth Service Conclusion

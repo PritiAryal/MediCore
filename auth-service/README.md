@@ -13,6 +13,7 @@ The auth-service is a core microservice in the MediCore system responsible for h
 - [Auth Service Docker Integration](#auth-service-docker-integration)
 - [Auth Service Security Configuration](#auth-service-security-configuration)
 - [Routing Auth Service Through API Gateway](#routing-auth-service-through-api-gateway)
+- [Exposing Swagger API Docs via Gateway](#exposing-swagger-api-docs-via-gateway)
 - [Auth Service Conclusion](#auth-service-conclusion)
 
 ---
@@ -272,6 +273,28 @@ GET http://localhost:8084/auth/validate
 * **Gateway becomes the enforcement layer** for all access policies
 
 ---
+
+## Exposing Swagger API Docs via Gateway
+
+The `auth-service` Swagger/OpenAPI spec is exposed through the API Gateway, allowing consumers and tools (like Swagger UI or codegen clients) to inspect or auto-generate integrations.
+
+### Gateway YAML Route:
+```yaml
+- id: api-docs-auth-route
+  uri: http://auth-service:8085
+  predicates:
+    - Path=/api-docs/auth
+  filters:
+    - RewritePath=/api-docs/auth,/v3/api-docs
+```
+
+### Test:
+Go to `http://localhost:8084/api-docs/auth` to see the OpenAPI JSON output.
+
+![img.png](assets/imgZ.png)
+
+---
+
 
 ## Auth Service Conclusion
 
