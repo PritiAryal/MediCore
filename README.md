@@ -4,6 +4,7 @@ This is a comprehensive **Medical Profile Management System** built with a micro
 
 > ⚙️ This is a learning-focused, end-to-end backend project.
 
+## Architecture Overview: [View Architecture Overview](https://pritiaryal.github.io/MediCoreArchitectureDesign/)
 
 ## Microservices Overview (in progress)
 
