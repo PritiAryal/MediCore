@@ -7,9 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="medical-profile-service" />
-        <module name="api-gateway" />
         <module name="medical-billing-service" />
         <module name="auth-service" />
+        <module name="infrastructure" />
+        <module name="api-gateway" />
         <module name="integration-tests" />
         <module name="medical-analytics-service" />
       </profile>

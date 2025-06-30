@@ -1,12 +1,14 @@
 ### Create a new medical profile entity
-POST http://localhost:8081/medical-profiles
+#POST http://localhost:8081/medical-profiles
+POST http://lb-2edf77c4.elb.localhost.localstack.cloud:8084/api/medical-profiles
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "name": "Priti Test Kafka 2",
-  "email": "pritiTest2@example.com",
-  "address": "809 north street",
-  "dateOfBirth": "1997-07-08",
-  "registeredDate": "2025-05-04"
+  "name": "Priti Test3",
+  "email": "pritiTest3@example.com",
+  "address": "809 north3 street",
+  "dateOfBirth": "1996-07-08",
+  "registeredDate": "2024-05-04"
 }
 ###

@@ -5,5 +5,6 @@
 ### Get request to get all medical profiles
 #GET http://localhost:8081/medical-profiles
 #Test using api-gateway
-GET http://localhost:8084/api/medical-profiles
+#GET http://localhost:8084/api/medical-profiles
+GET http://lb-2edf77c4.elb.localhost.localstack.cloud:8084/api/medical-profiles
 Authorization: Bearer {{token}}
