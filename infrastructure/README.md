@@ -222,24 +222,24 @@ flowchart TB
                         
                         subgraph IDE[Developer Machine]
                             direction LR
-                            Code[Application Code] -->|"1. Deploys to"| LocalStack[LocalStack\nAWS Emulation]
-                            Tests[Test Suite] -->|"2. Invokes"| LocalStack
-                            CLI[AWS CLI] -->|"3. Configures"| LocalStack
+                            Code[Application Code] -->|1. Deploys to| LocalStack[LocalStack AWS Emulation]
+                            Tests[Test Suite] -->|2. Invokes| LocalStack
+                            CLI[AWS CLI] -->|3. Configures| LocalStack
                         end
                         
                         subgraph DockerEnv[Docker Environment]
-                            APIGW[API Gateway\nContainer]
-                            AUTH[Auth Service\nContainer]
-                            PROFILE[Profile Service\nContainer]
-                            BILLING[Billing Service\nContainer]
-                            ANALYTICS[Analytics Service\nContainer]
+                            APIGW[API Gateway Container]
+                            AUTH[Auth Service Container]
+                            PROFILE[Profile Service Container]
+                            BILLING[Billing Service Container]
+                            ANALYTICS[Analytics Service Container]
                             
                             subgraph DB[Database Services]
-                                POSTGRES[PostgreSQL\nContainer]
+                                POSTGRES[PostgreSQL Container]
                             end
                             
                             subgraph MSG[Message Services]
-                                KAFKA[Kafka\nContainer]
+                                KAFKA[Kafka Container]
                             end
                         end
                         

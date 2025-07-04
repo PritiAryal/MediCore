@@ -2026,18 +2026,18 @@ flowchart TB
                         end
                         
                         subgraph DockerEnv[Docker Environment]
-                            APIGW[API Gateway\nContainer]
-                            AUTH[Auth Service\nContainer]
-                            PROFILE[Profile Service\nContainer]
-                            BILLING[Billing Service\nContainer]
-                            ANALYTICS[Analytics Service\nContainer]
+                            APIGW[API Gateway Container]
+                            AUTH[Auth Service Container]
+                            PROFILE[Profile Service Container]
+                            BILLING[Billing Service Container]
+                            ANALYTICS[Analytics Service Container]
                             
                             subgraph DB[Database Services]
-                                POSTGRES[PostgreSQL\nContainer]
+                                POSTGRES[PostgreSQL Container]
                             end
                             
                             subgraph MSG[Message Services]
-                                KAFKA[Kafka\nContainer]
+                                KAFKA[Kafka Container]
                             end
                         end
                         
