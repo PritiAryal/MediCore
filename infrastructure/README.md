@@ -222,9 +222,9 @@ flowchart TB
                         
                         subgraph IDE[Developer Machine]
                             direction LR
-                            Code[Application Code] -->|1. Deploys to| LocalStack[LocalStack AWS Emulation]
-                            Tests[Test Suite] -->|2. Invokes| LocalStack
-                            CLI[AWS CLI] -->|3. Configures| LocalStack
+                            Code[Application Code] -->|1 Deploys to| LocalStack[LocalStack AWS Emulation]
+                            Tests[Test Suite] -->|2 Invokes| LocalStack
+                            CLI[AWS CLI] -->|3 Configures| LocalStack
                         end
                         
                         subgraph DockerEnv[Docker Environment]
@@ -243,7 +243,7 @@ flowchart TB
                             end
                         end
                         
-                        LocalStack -->|"4. Manages Containers"| DockerEnv
+                        LocalStack -->|4 Manages Containers| DockerEnv
                         
                         %% Service Connections
                         APIGW --> AUTH
