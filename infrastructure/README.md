@@ -164,10 +164,10 @@ flowchart TB
                         subgraph PrivateSubnet[Private Subnet]
                             subgraph ECSCluster[ECS Cluster]
                                 APIGW[API Gateway]
-                                AUTH[Auth Service]
-                                PROFILE[Profile Service]
-                                BILLING[Billing Service]
-                                ANALYTICS[Analytics Service]
+                                AUTH[Authentication Service]
+                                PROFILE[Medical Profile Service]
+                                BILLING[Medical Billing Service]
+                                ANALYTICS[Medical Analytics Service]
                             end
 
                             subgraph AmazonRDS[Amazon RDS]
@@ -229,10 +229,10 @@ flowchart TB
                         
                         subgraph DockerEnv[Docker Environment]
                             APIGW[API Gateway Container]
-                            AUTH[Auth Service Container]
-                            PROFILE[Profile Service Container]
-                            BILLING[Billing Service Container]
-                            ANALYTICS[Analytics Service Container]
+                            AUTH[Authentication Service Container]
+                            PROFILE[Medical Profile Service Container]
+                            BILLING[Medical Billing Service Container]
+                            ANALYTICS[Medical Analytics Service Container]
                             
                             subgraph DB[Database Services]
                                 POSTGRES[PostgreSQL Container]
