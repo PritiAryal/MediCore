@@ -103,32 +103,169 @@ The infrastructure provisions:
 
 ## Architecture Diagram
 
+[//]: # (```mermaid)
+
+[//]: # (flowchart TB)
+
+[//]: # (    subgraph PublicSubnet)
+
+[//]: # (        A[ALB<br>Application Load Balancer])
+
+[//]: # (    end)
+
+[//]: # ()
+[//]: # (    subgraph PrivateSubnet)
+
+[//]: # (        A --> G[API Gateway<br>Fargate Service])
+
+[//]: # ()
+[//]: # (        G --> S1[Auth Service])
+
+[//]: # (        G --> S2[Medical Profile Service])
+
+[//]: # (        G --> S3[Medical Billing Service])
+
+[//]: # (        G --> S4[Medical Analytics Service])
+
+[//]: # ()
+[//]: # (        S1 --> D1[&#40;auth-service-db&#41;])
+
+[//]: # (        S2 --> D2[&#40;medical-profile-service-db&#41;])
+
+[//]: # (        S2 -->|gRPC| S3)
+
+[//]: # (        S2 -->|Kafka Events| K[Kafka Cluster])
+
+[//]: # (        S4 -->|Kafka Consume| K)
+
+[//]: # (    end)
+
+[//]: # ()
+[//]: # (    style A fill:#f3f4f6,stroke:#ccc)
+
+[//]: # (    style G fill:#dbeafe,stroke:#3b82f6)
+
+[//]: # (    style S1,S2,S3,S4 fill:#e0f2fe)
+
+[//]: # (    style D1,D2 fill:#fef3c7)
+
+[//]: # (    style K fill:#f3e8ff,stroke:#8b5cf6)
+
+[//]: # (```)
+
 ```mermaid
 flowchart TB
-    subgraph PublicSubnet
-        A[ALB<br>Application Load Balancer]
-    end
+                subgraph AWSCloud[AWS Cloud]
+                    subgraph MediCoreVPC[MediCore VPC]
+                        subgraph PublicSubnet[Public Subnet]
+                            ALB[Application Load Balancer]
+                        end
 
-    subgraph PrivateSubnet
-        A --> G[API Gateway<br>Fargate Service]
+                        subgraph PrivateSubnet[Private Subnet]
+                            subgraph ECSCluster[ECS Cluster]
+                                APIGW[API Gateway]
+                                AUTH[Auth Service]
+                                PROFILE[Profile Service]
+                                BILLING[Billing Service]
+                                ANALYTICS[Analytics Service]
+                            end
 
-        G --> S1[Auth Service]
-        G --> S2[Medical Profile Service]
-        G --> S3[Medical Billing Service]
-        G --> S4[Medical Analytics Service]
+                            subgraph AmazonRDS[Amazon RDS]
+                                AUTHDB[(Auth DB)]
+                                PROFILEDB[(Profile DB)]
+                            end
 
-        S1 --> D1[(auth-service-db)]
-        S2 --> D2[(medical-profile-service-db)]
-        S2 -->|gRPC| S3
-        S2 -->|Kafka Events| K[Kafka Cluster]
-        S4 -->|Kafka Consume| K
-    end
+                            subgraph AmazonMSK[Amazon MSK]
+                                KAFKA[(Kafka Cluster)]
+                            end
+                        end
+                    end
 
-    style A fill:#f3f4f6,stroke:#ccc
-    style G fill:#dbeafe,stroke:#3b82f6
-    style S1,S2,S3,S4 fill:#e0f2fe
-    style D1,D2 fill:#fef3c7
-    style K fill:#f3e8ff,stroke:#8b5cf6
+                    CW[Monitoring]
+                    SM[Secrets Manager]
+                end
+
+                Internet --> ALB
+                ALB --> APIGW
+                APIGW --> AUTH
+                APIGW --> PROFILE
+                PROFILE --> |gRPC|BILLING
+                PROFILE --> |Kafka Event|KAFKA
+                KAFKA --> |Kafka Consume|ANALYTICS
+
+                AUTH --> AUTHDB
+                PROFILE --> PROFILEDB
+
+                CW -.-> ECSCluster
+                CW -.-> AmazonRDS
+                CW -.-> AmazonMSK
+                SM --> AUTHDB
+                SM --> PROFILEDB
+
+                classDef alb fill:#f3f4f6,stroke:#9ca3af;
+                classDef ecs fill:#e0f2fe,stroke:#0ea5e9;
+                classDef db fill:#fef3c7,stroke:#f59e0b;
+                classDef kafka fill:#f3e8ff,stroke:#8b5cf6;
+                classDef aws fill:#f0fdf4,stroke:#10b981;
+
+                class ALB alb;
+                class APIGW,AUTH,PROFILE,BILLING,ANALYTICS ecs;
+                class AUTHDB,PROFILEDB db;
+                class KAFKA kafka;
+                class AWSCloud aws;
+```
+
+```mermaid
+flowchart TB
+                    subgraph Local[Local Development]
+                        direction TB
+                        
+                        subgraph IDE[Developer Machine]
+                            direction LR
+                            Code[Application Code] -->|"1. Deploys to"| LocalStack[LocalStack\nAWS Emulation]
+                            Tests[Test Suite] -->|"2. Invokes"| LocalStack
+                            CLI[AWS CLI] -->|"3. Configures"| LocalStack
+                        end
+                        
+                        subgraph DockerEnv[Docker Environment]
+                            APIGW[API Gateway\nContainer]
+                            AUTH[Auth Service\nContainer]
+                            PROFILE[Profile Service\nContainer]
+                            BILLING[Billing Service\nContainer]
+                            ANALYTICS[Analytics Service\nContainer]
+                            
+                            subgraph DB[Database Services]
+                                POSTGRES[PostgreSQL\nContainer]
+                            end
+                            
+                            subgraph MSG[Message Services]
+                                KAFKA[Kafka\nContainer]
+                            end
+                        end
+                        
+                        LocalStack -->|"4. Manages Containers"| DockerEnv
+                        
+                        %% Service Connections
+                        APIGW --> AUTH
+                        APIGW --> PROFILE
+                        PROFILE --> BILLING
+                        PROFILE --> KAFKA
+                        KAFKA --> ANALYTICS
+                        AUTH --> POSTGRES
+                        PROFILE --> POSTGRES
+                    end
+                    
+                    classDef dev fill:#e3f2fd,stroke:#2196f3;
+                    classDef container fill:#bbdefb,stroke:#1e88e5;
+                    classDef db fill:#fff8e1,stroke:#ffc107;
+                    classDef msg fill:#f3e5f5,stroke:#9c27b0;
+                    classDef tool fill:#e8f5e9,stroke:#66bb6a;
+                    
+                    class Local,IDE dev;
+                    class APIGW,AUTH,PROFILE,BILLING,ANALYTICS container;
+                    class DB,POSTGRES db;
+                    class MSG,KAFKA msg;
+                    class Code,Tests,CLI tool;
 ```
 
 ---
